@@ -5,6 +5,9 @@ export const REGIONS = {
   FR: { label: '法國 France' },
   BR: { label: '巴西 Brazil' },
   UK: { label: '英國 United Kingdom' },
+  DE: { label: '德國 Germany' },
+  CA: { label: '加拿大 Canada' },
+  FI: { label: '芬蘭 Finland' },
   CN: { label: '中國／香港 China / HK', flagged: true },
   UNDISCLOSED: { label: '未逐一揭露 Undisclosed' },
 };
@@ -50,12 +53,87 @@ export const SOURCES = {
   goldwin_nippon: { title: 'The North Face: A Storied US Brand and a Japanese Success Story', publisher: 'Nippon.com', kind: 'news', url: 'https://www.nippon.com/en/japan-topics/g02570/' },
   vfc_proxy26: { title: 'VF Corporation 2026 Proxy Statement (Beneficial Owners)', publisher: 'SEC EDGAR', date: '2026-06-15', kind: 'filing', url: 'https://www.sec.gov/Archives/edgar/data/103379/000119312526270610/d60482ddef14a.htm' },
 
+  as_ipo: { title: 'Amer Sports, Inc. IPO prospectus (424B4, Principal Shareholders)', publisher: 'SEC EDGAR', date: '2024-02-02', kind: 'filing', url: 'https://www.sec.gov/Archives/edgar/data/1988894/000110465924010053/tm2322981-18_424b4.htm' },
+  as_pricing: { title: 'Amer Sports Inc. Announces Pricing of its Initial Public Offering', publisher: 'Business Wire', date: '2024-01-31', kind: 'company', url: 'https://www.businesswire.com/news/home/20240131081309/en/Amer-Sports-Inc.-Announces-Pricing-of-its-Initial-Public-Offering' },
+  as_20f23: { title: 'Amer Sports, Inc. Form 20-F FY2023 (Major Shareholders)', publisher: 'SEC EDGAR', date: '2024-03-18', kind: 'filing', url: 'https://www.sec.gov/Archives/edgar/data/1988894/000110465924035553/as-20231231x20f.htm' },
+  as_20f24: { title: 'Amer Sports, Inc. Form 20-F FY2024 (Major Shareholders)', publisher: 'SEC EDGAR', date: '2025-03-07', kind: 'filing', url: 'https://www.sec.gov/Archives/edgar/data/1988894/000162828025011314/as-20241231.htm' },
+  as_20f25: { title: 'Amer Sports, Inc. Form 20-F FY2025 (Major Shareholders, brand histories)', publisher: 'SEC EDGAR', date: '2026-02-26', kind: 'filing', url: 'https://www.sec.gov/Archives/edgar/data/1988894/000198889426000004/as-20251231.htm' },
+  amer_salomon_gnw: { title: 'Amer Sports Acquires Salomon', publisher: 'GlobeNewswire (Amer Sports)', date: '2005-05-02', kind: 'company', url: 'https://www.globenewswire.com/news-release/2005/05/02/1858383/0/en/amer-sports-acquires-salomon.html' },
+  adidas_salomon_sale: { title: 'adidas-Salomon to sell Salomon to Amer Sports Corporation (ad hoc)', publisher: 'OTS / euro adhoc', date: '2005-05-02', kind: 'company', url: 'https://www.ots.at/presseaussendung/OTE_20050502_OTE0002/euro-adhoc-adidas-salomon-ag-mergers-acquisitions-takeovers-adidas-salomon-to-sell-salomon-to-amer-sports-corporation-e' },
+  salomon_wiki: { title: 'Salomon Group', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Salomon_Group' },
+  arcteryx_wiki: { title: "Arc'teryx", publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Arc%27teryx' },
+  arcteryx_salomon_2001: { title: 'Salomon acquires Canadian outdoor specialist', publisher: 'Pambianco News', date: '2001-12-04', kind: 'news', url: 'https://www.pambianconews.com/2001/12/04/salomon-acquires-canadian-outdoor-specialist-5182/' },
+  wilson_history: { title: 'Wilson Sporting Goods Company History', publisher: 'FundingUniverse', kind: 'reference', url: 'https://www.fundinguniverse.com/company-histories/wilson-sporting-goods-company-history/' },
+  amer_group_history: { title: 'Amer Group plc', publisher: 'Encyclopedia.com', kind: 'reference', url: 'https://encyclopedia.com/books/politics-and-business-magazines/amer-group-plc' },
+
   mb_founder: { title: 'Founder Isamu Tatsuno', publisher: 'montbell (official)', kind: 'company', url: 'https://en.montbell.jp:443/company/founder/' },
   mb_uk: { title: 'About montbell', publisher: 'montbell UK (official)', kind: 'company', url: 'https://www.montbell.co.uk/pages/about-montbell' },
   mb_bunshun: { title: 'モンベル代表取締役会長 辰野勇', publisher: '文藝春秋', kind: 'news', url: 'https://bunshun.jp/bungeishunju/articles/h10197' },
 };
 
 const UNRESEARCHED_PUBLIC = [{ name: '公開市場股東（本期尚未研究）', origin: 'UNDISCLOSED', pct: 100 }];
+
+const ANTA_NOTE = '香港上市的中國運動用品公司（安踏體育）。';
+const FOUNTAINVEST_NOTE = '亞洲私募基金（方源資本），持股基金名為 FountainVest China Capital Partners Fund III。';
+const TENCENT_NOTE = '中國科技公司（騰訊）。';
+const ANAMERED_NOTE = 'Lululemon 創辦人 Chip Wilson 的投資公司，主要營業地在加拿大卑詩省。';
+
+export const GROUPS = {
+  amer: {
+    name: 'Amer Sports',
+    eras: [
+      { from: 1989, parent: 'Amer Group／Amer Sports Oyj (赫爾辛基上市)', parentOrigin: 'FI', defaultHolders: UNRESEARCHED_PUBLIC, snapshots: [] },
+      {
+        from: 2019, parent: 'Amer Sports (安踏財團私有化)', parentOrigin: 'FI',
+        defaultHolders: [
+          { name: '安踏體育 ANTA Sports', origin: 'CN', pct: 56.0, note: `${ANTA_NOTE}比例取自 2024 年上市前公開說明書，2019–2023 年間可能略有變動。` },
+          { name: 'Anamered (Chip Wilson)', origin: 'CA', pct: 20.6, note: ANAMERED_NOTE },
+          { name: '方源資本 FountainVest', origin: 'CN', pct: 16.0, note: FOUNTAINVEST_NOTE },
+          { name: '騰訊 Tencent', origin: 'CN', pct: 5.6, note: TENCENT_NOTE },
+        ],
+        snapshots: [],
+      },
+      {
+        from: 2024, parent: 'Amer Sports, Inc. (NYSE: AS)', parentOrigin: 'FI', defaultHolders: UNRESEARCHED_PUBLIC,
+        snapshots: [
+          {
+            asOf: '2024-02-29', basis: '普通股持股比例（上市後）', source: 'as_20f23',
+            holders: [
+              { name: '安踏體育 ANTA Sports', origin: 'CN', pct: 46.0, note: ANTA_NOTE },
+              { name: 'Anamered (Chip Wilson)', origin: 'CA', pct: 20.6, note: ANAMERED_NOTE },
+              { name: '方源資本 FountainVest', origin: 'CN', pct: 13.7, note: FOUNTAINVEST_NOTE },
+              { name: '騰訊 Tencent', origin: 'CN', pct: 6.5, note: TENCENT_NOTE },
+            ],
+          },
+          {
+            asOf: '2025-02-01', basis: '普通股持股比例', source: 'as_20f24',
+            holders: [
+              { name: '安踏體育 ANTA Sports', origin: 'CN', pct: 42.5, note: ANTA_NOTE },
+              { name: 'Anamered (Chip Wilson)', origin: 'CA', pct: 18.8, note: ANAMERED_NOTE },
+              { name: '方源資本 FountainVest', origin: 'CN', pct: 12.6, note: FOUNTAINVEST_NOTE },
+              { name: '騰訊 Tencent', origin: 'CN', pct: 5.7, note: TENCENT_NOTE },
+            ],
+          },
+          {
+            asOf: '2026-02-20', basis: '普通股持股比例', source: 'as_20f25',
+            holders: [
+              { name: '安踏體育 ANTA Sports', origin: 'CN', pct: 41.7, note: ANTA_NOTE },
+              { name: 'Anamered (Chip Wilson)', origin: 'CA', pct: 17.9, note: ANAMERED_NOTE },
+              { name: '方源資本 FountainVest', origin: 'CN', pct: 6.1, note: FOUNTAINVEST_NOTE },
+              { name: '騰訊 Tencent', origin: 'CN', pct: 5.7, note: TENCENT_NOTE },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+};
+
+const AMER_CHINA_EVENTS = [
+  { date: '2019-04-01', type: 'acquired', title: '安踏財團收購 Amer Sports', to: '安踏體育等財團', counterpartyOrigin: 'CN', summary: '由安踏體育、方源資本、Chip Wilson 的 Anamered 與騰訊組成的財團收購芬蘭 Amer Sports，旗下品牌一併易主。上市前持股：安踏 56.0%、Anamered 20.6%、方源 16.0%、騰訊 5.6%。', sources: ['as_ipo'] },
+  { date: '2024-02-01', type: 'ipo', title: 'Amer Sports 紐約上市 (AS)', summary: '以每股 13 美元發行 1.05 億股。上市後安踏仍為最大股東，持股 46.0%（2024-02-29）。', sources: ['as_pricing', 'as_20f23'] },
+  { date: '2026-02-20', type: 'stake', title: '中國資本合計約 53.5%', counterpartyOrigin: 'CN', summary: '最新年報：安踏 41.7%、方源 6.1%、騰訊 5.7%，加總約 53.5%；方源自 2024 年的 12.6% 減持至 6.1%。', sources: ['as_20f25', 'as_20f24'] },
+];
 
 export const BRANDS = [
   {
@@ -200,6 +278,62 @@ export const BRANDS = [
     ],
     events: [
       { date: '2003-09-04', type: 'acquired', title: '被 Nike 收購', from: 'Converse Inc.', to: 'NIKE, Inc.', stakePct: 100, summary: 'Nike 以約 3.05 億美元現金取得 100% 股權。', priceUSD: 305e6, sources: ['nke_converse_8k', 'nke_10k03'] },
+    ],
+  },
+  {
+    id: 'arcteryx',
+    name: "Arc'teryx",
+    origin: 'CA',
+    founded: 1989,
+    summary: '1989 年由 Dave Lane 在加拿大北溫哥華以 Rock Solid 名義創立，1991 年更名。2001 年被法國 Salomon（當時屬 adidas）收購，2005 年隨 Salomon 轉給芬蘭 Amer Sports，2019 年起由中國安踏體育為首的財團控股。',
+    eras: [
+      { from: 1989, parent: "Arc'teryx Equipment (Rock Solid)", parentOrigin: 'CA', defaultHolders: [{ name: "Arc'teryx 創辦人", origin: 'CA', pct: 100 }], snapshots: [] },
+      { from: 2002, parent: 'adidas-Salomon AG', parentOrigin: 'DE', defaultHolders: UNRESEARCHED_PUBLIC, snapshots: [] },
+      { from: 2005, parent: 'Amer Sports', parentOrigin: 'FI', inheritFrom: 'amer', snapshots: [] },
+    ],
+    events: [
+      { date: '1989', type: 'founded', title: '於北溫哥華創立', summary: 'Dave Lane 以 Rock Solid 名義創立，最初生產攀岩裝備。', sources: ['arcteryx_wiki', 'as_20f25'] },
+      { date: '1991', type: 'rename', title: "更名為 Arc'teryx", summary: '更名時由 Jeremy Guard 主導。', sources: ['arcteryx_wiki'] },
+      { date: '2001-12', type: 'acquired', title: 'Salomon 收購', to: 'Salomon (adidas-Salomon)', summary: 'Salomon 宣布簽約收購 Arc’teryx Equipment Inc.，金額未公開。當時 Salomon 為德國 adidas-Salomon AG 旗下。', sources: ['arcteryx_salomon_2001'] },
+      { date: '2005-10', type: 'acquired', title: '隨 Salomon 轉給 Amer Sports', to: 'Amer Sports', summary: 'adidas 將 Salomon 事業部（含 Salomon、Mavic、Bonfire、Arc’teryx、Cliché）出售給 Amer Sports，企業價值約 4.85 億歐元。', sources: ['amer_salomon_gnw', 'adidas_salomon_sale'] },
+      ...AMER_CHINA_EVENTS,
+    ],
+  },
+  {
+    id: 'salomon',
+    name: 'Salomon',
+    origin: 'FR',
+    founded: 1947,
+    summary: '1947 年由 François Salomon 在法國安錫創立。1997 年被 adidas 收購，2005 年轉售芬蘭 Amer Sports，2019 年起由中國安踏體育為首的財團控股。',
+    eras: [
+      { from: 1947, parent: 'Salomon SA', parentOrigin: 'FR', defaultHolders: [{ name: 'Salomon 家族', origin: 'FR', pct: 100 }], snapshots: [] },
+      { from: 1997, parent: 'adidas-Salomon AG', parentOrigin: 'DE', defaultHolders: UNRESEARCHED_PUBLIC, snapshots: [] },
+      { from: 2005, parent: 'Amer Sports', parentOrigin: 'FI', inheritFrom: 'amer', snapshots: [] },
+    ],
+    events: [
+      { date: '1947', type: 'founded', title: '於法國安錫創立', summary: 'François Salomon 從製作滑雪板鋼邊的小工坊起家，其子 Georges 帶領公司發展滑雪固定器等產品。', sources: ['salomon_wiki'] },
+      { date: '1997', type: 'acquired', title: 'adidas 收購', to: 'adidas', summary: 'adidas 收購 Salomon 集團（含 TaylorMade），母公司更名為 adidas-Salomon AG。', sources: ['salomon_wiki'] },
+      { date: '2005-10-20', type: 'acquired', title: 'Amer Sports 收購', to: 'Amer Sports', summary: 'adidas 以企業價值約 4.85 億歐元將 Salomon 事業部出售給 Amer Sports，2005 年 5 月 2 日宣布。', sources: ['amer_salomon_gnw', 'adidas_salomon_sale', 'salomon_wiki'] },
+      ...AMER_CHINA_EVENTS,
+    ],
+  },
+  {
+    id: 'wilson',
+    name: 'Wilson',
+    origin: 'US',
+    founded: 1914,
+    summary: '1914 年創立於芝加哥的美國運動器材品牌。1970 年起歸 PepsiCo，1985 年轉手，1989 年被芬蘭 Amer Group 收購，2019 年起由中國安踏體育為首的財團控股。',
+    eras: [
+      { from: 1970, parent: 'PepsiCo', parentOrigin: 'US', defaultHolders: UNRESEARCHED_PUBLIC, snapshots: [] },
+      { from: 1985, parent: 'WSGC Holdings (Wesray)', parentOrigin: 'US', defaultHolders: [{ name: 'WSGC Holdings／Wesray Capital', origin: 'US', pct: 100 }], snapshots: [] },
+      { from: 1989, parent: 'Amer Sports', parentOrigin: 'FI', inheritFrom: 'amer', snapshots: [] },
+    ],
+    events: [
+      { date: '1914', type: 'founded', title: '於芝加哥創立', summary: 'Amer Sports 年報記載 Wilson 品牌創立於 1914 年。1970 年前的股權沿革尚未研究。', sources: ['as_20f25'] },
+      { date: '1970', type: 'acquired', title: 'PepsiCo 取得控制權', to: 'PepsiCo', summary: 'Wilson 歸入 PepsiCo 旗下，按產品類別拆分事業部。', sources: ['wilson_history', 'amer_group_history'] },
+      { date: '1985', type: 'acquired', title: '轉手 WSGC Holdings', to: 'WSGC Holdings／Wesray', summary: '各來源說法不一：Encyclopedia.com 稱售予 Wesray Capital，FundingUniverse 稱由 WSGC Holdings 買下。', sources: ['wilson_history', 'amer_group_history'] },
+      { date: '1989-02', type: 'acquired', title: '芬蘭 Amer Group 收購', to: 'Amer Group', summary: 'Amer Group 關係企業與 WSGC Holdings 合併，Wilson 成為 Amer 全資子公司，當時為芬蘭最大的海外收購案。', sources: ['wilson_history', 'amer_group_history'] },
+      ...AMER_CHINA_EVENTS,
     ],
   },
   {

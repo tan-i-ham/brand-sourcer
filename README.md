@@ -18,6 +18,7 @@ All data lives in `src/data.js`.
 - `SOURCES` holds every cited filing, news article, or reference.
 - Each brand in `BRANDS` has `eras`, one per controlling owner. An era has `snapshots` of disclosed shareholders, each with an `asOf` date, a `basis` (economic interest, share class), and a source.
 - `events` is the timeline: founding, acquisitions, stake changes, IPOs, divestitures. Each event cites at least one source.
+- `GROUPS` holds a parent company that owns several brands, such as Amer Sports (Arc'teryx, Salomon, Wilson). A brand era with `inheritFrom: '<group or brand id>'` takes its shareholders from that owner, so the data lives in one place.
 
 `src/model.js` turns this into a composition for a selected year. It picks the latest snapshot on or before that year. The share that no filing names becomes "其他公開市場股東（未逐一揭露）". A region with `flagged: true` (China / HK) is counted as China capital.
 

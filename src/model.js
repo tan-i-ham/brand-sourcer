@@ -1,8 +1,9 @@
-import { BRANDS, REGIONS } from './data.js';
+import { BRANDS, GROUPS, REGIONS } from './data.js';
 
 export const REMAINDER_NAME = '其他公開市場股東（未逐一揭露）';
 
 const byId = Object.fromEntries(BRANDS.map((b) => [b.id, b]));
+const owners = { ...GROUPS, ...byId };
 const yearOf = (date) => Number(String(date).slice(0, 4));
 
 function eraAt(brand, year) {
@@ -13,8 +14,8 @@ export function compositionAt(brand, year) {
   const era = eraAt(brand, year);
   if (!era) return null;
   if (era.inheritFrom) {
-    const inherited = compositionAt(byId[era.inheritFrom], year);
-    return { ...inherited, era, inheritedFrom: byId[era.inheritFrom].name };
+    const owner = owners[era.inheritFrom];
+    return { ...compositionAt(owner, year), inheritedFrom: owner.name };
   }
   const snapshot = era.snapshots.filter((s) => yearOf(s.asOf) <= year).at(-1) ?? null;
   const holders = snapshot ? snapshot.holders : era.defaultHolders;
@@ -88,5 +89,7 @@ export const EVENT_TYPES = {
 export function dealCount(brand, type) {
   return brand.events.filter((e) => e.type === type).length;
 }
+
+export const FIRST_YEAR = Math.min(...BRANDS.map((b) => b.eras[0].from));
 
 export { BRANDS, REGIONS, byId, yearOf };
