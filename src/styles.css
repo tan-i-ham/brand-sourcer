@@ -49,7 +49,8 @@ button { font: inherit; border: 1px solid var(--line); background: var(--surface
 main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; margin-top: 16px; }
 @media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } #panel { position: static; max-height: none; } }
 .chart { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
-.chart figcaption { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+.chart figcaption { color: var(--muted); font-size: 13px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chart figcaption button { font-size: 13px; }
 #sankey { overflow-x: auto; }
 #sankey svg { display: block; }
 #sankey .node rect { cursor: pointer; stroke: var(--bg); }

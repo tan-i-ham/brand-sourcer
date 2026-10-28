@@ -50,6 +50,9 @@ assert.equal(compositionAt(BRANDS.find((b) => b.id === 'on'), 2021).holders.find
   'On at end of 2021 shows Hillhouse 5.1%');
 assert.equal(compositionAt(BRANDS.find((b) => b.id === 'on'), 2026).holders.some((h) => h.origin === 'CN'), false,
   'On in 2026 shows no disclosed China capital');
+assert.deepEqual(sankeyGraph(2026, 'on').nodes.filter((n) => n.kind === 'brand').map((n) => n.brandId), ['on'],
+  'focusing a brand hides the other brands');
+assert.equal(sankeyGraph(1990, 'converse').nodes.length, 0, 'a focused brand with no data that year yields an empty graph');
 assert.equal(compositionAt(BRANDS.find((b) => b.id === 'hoka'), 2010).era.parent, 'HOKA One One SAS', 'Hoka is French-owned before Deckers');
 
 if (errors.length) {
