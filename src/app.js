@@ -32,7 +32,7 @@ function setYear(year) {
 }
 
 function select(id) {
-  state.selected = id;
+  state.selected = id === state.selected && id.startsWith('brand:') ? null : id;
   render();
 }
 
@@ -53,7 +53,13 @@ function renderCards() {
 
 function renderSankey() {
   const container = document.getElementById('sankey');
-  const graph = sankeyGraph(state.year);
+  const focus = state.selected?.startsWith('brand:') ? state.selected.slice(6) : null;
+  document.getElementById('show-all').hidden = !focus;
+  const graph = sankeyGraph(state.year, focus);
+  if (!graph.nodes.length) {
+    container.innerHTML = `<p class="hint">${state.year} 年尚無 ${esc(byId[focus].name)} 的資料，請把年份往後拉。</p>`;
+    return;
+  }
   const width = Math.max(container.clientWidth, 760);
   const height = Math.max(420, graph.nodes.length * 26);
   const layout = d3.sankey()
@@ -181,6 +187,7 @@ document.getElementById('play').addEventListener('click', (ev) => {
     setYear(state.year + 1);
   }, 350);
 });
+document.getElementById('show-all').addEventListener('click', () => select(state.selected));
 yearInput.addEventListener('input', () => setYear(Number(yearInput.value)));
 window.addEventListener('resize', () => renderSankey());
 

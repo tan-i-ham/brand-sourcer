@@ -31,7 +31,7 @@ export function flaggedShare(composition) {
   return composition.holders.filter((h) => REGIONS[h.origin].flagged).reduce((s, h) => s + h.pct, 0);
 }
 
-export function sankeyGraph(year) {
+export function sankeyGraph(year, focusBrandId = null) {
   const nodes = new Map();
   const links = new Map();
   const node = (id, props) => {
@@ -44,7 +44,7 @@ export function sankeyGraph(year) {
     links.set(key, { source, target, value: (prev?.value ?? 0) + value });
   };
 
-  for (const brand of BRANDS) {
+  for (const brand of focusBrandId ? [byId[focusBrandId]] : BRANDS) {
     const comp = compositionAt(brand, year);
     if (!comp) continue;
     const brandId = node(`brand:${brand.id}`, { kind: 'brand', label: brand.name, brandId: brand.id, region: brand.origin });
