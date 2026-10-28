@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>品牌資本溯源 Brand Sourcer</title>
+  <link rel="stylesheet" href="src/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>品牌資本溯源 <span class="en">Brand Sourcer</span></h1>
+    <p class="lede">這個品牌從哪裡來？誰買下了它？現在的錢來自哪裡？每一筆資料都附上財報或新聞來源。</p>
+  </header>
+
+  <section class="controls" aria-label="年份">
+    <label for="year">年份 <output id="year-out"></output></label>
+    <input id="year" type="range" min="1964" max="2026" step="1">
+    <button id="play" type="button">▶ 播放</button>
+  </section>
+
+  <section id="cards" class="cards" aria-label="各品牌中國資本比例"></section>
+
+  <main>
+    <figure class="chart">
+      <figcaption>資本來源地 → 股東 → 母公司 → 品牌（每個品牌寬度 = 100%）</figcaption>
+      <div id="sankey"></div>
+      <ul class="legend">
+        <li><span class="sw flagged"></span>中國／香港資本</li>
+        <li><span class="sw undisclosed"></span>未逐一揭露的公開市場股東</li>
+        <li><span class="sw other"></span>其他地區資本</li>
+      </ul>
+    </figure>
+    <aside id="panel" aria-live="polite"></aside>
+  </main>
+
+  <footer>
+    <p>持股比例取自最近一期公開揭露（年報、委託書、SEC 13G）。上市公司只揭露 5% 以上大股東，其餘歸入「未逐一揭露」。非上場公司（如 mont-bell）持股未公開，以經營者推定。資料有誤請以來源為準。</p>
+  </footer>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
