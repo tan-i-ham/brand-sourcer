@@ -1,16 +1,17 @@
 import assert from 'node:assert/strict';
-import { BRANDS, REGIONS, SOURCES } from '../src/data.js';
-import { compositionAt, sankeyGraph, yearOf } from '../src/model.js';
+import { BRANDS, GROUPS, REGIONS, SOURCES } from '../src/data.js';
+import { FIRST_YEAR as firstYear, compositionAt, flaggedShare, sankeyGraph, yearOf } from '../src/model.js';
 
 const used = new Set();
 const errors = [];
 const check = (ok, msg) => ok || errors.push(msg);
 
-for (const brand of BRANDS) {
+for (const brand of [...BRANDS, ...Object.values(GROUPS)].map((b) => ({ id: b.name, origin: 'UNDISCLOSED', events: [], ...b }))) {
   check(REGIONS[brand.origin], `${brand.id}: unknown origin ${brand.origin}`);
   brand.eras.forEach((era, i) => {
     check(i === 0 || era.from > brand.eras[i - 1].from, `${brand.id}: eras out of order at ${era.from}`);
     check(REGIONS[era.parentOrigin], `${brand.id}@${era.from}: unknown parentOrigin`);
+    check(!era.inheritFrom || GROUPS[era.inheritFrom] || BRANDS.some((b) => b.id === era.inheritFrom), `${brand.id}@${era.from}: unknown inheritFrom ${era.inheritFrom}`);
     for (const holders of [era.defaultHolders ?? [], ...era.snapshots.map((s) => s.holders)]) {
       const sum = holders.reduce((s, h) => s + h.pct, 0);
       check(sum <= 100.05, `${brand.id}@${era.from}: holders sum to ${sum}`);
@@ -34,7 +35,7 @@ for (const brand of BRANDS) {
 for (const key of Object.keys(SOURCES)) check(used.has(key), `source ${key} is never cited`);
 for (const [key, s] of Object.entries(SOURCES)) check(/^https:\/\//.test(s.url), `source ${key} has a non-https url`);
 
-for (let year = 1964; year <= 2026; year++) {
+for (let year = firstYear; year <= 2026; year++) {
   const { nodes, links } = sankeyGraph(year);
   for (const l of links) check(l.value > 0, `${year}: non-positive link ${l.source}→${l.target}`);
   for (const brand of BRANDS) {
@@ -53,10 +54,16 @@ assert.equal(compositionAt(BRANDS.find((b) => b.id === 'on'), 2026).holders.some
 assert.deepEqual(sankeyGraph(2026, 'on').nodes.filter((n) => n.kind === 'brand').map((n) => n.brandId), ['on'],
   'focusing a brand hides the other brands');
 assert.equal(sankeyGraph(1990, 'converse').nodes.length, 0, 'a focused brand with no data that year yields an empty graph');
+const brand = (id) => BRANDS.find((b) => b.id === id);
+for (const id of ['arcteryx', 'salomon', 'wilson']) {
+  assert.equal(Math.round(flaggedShare(compositionAt(brand(id), 2026)) * 10) / 10, 53.5, `${id} in 2026 shows 53.5% China capital via Amer Sports`);
+  assert.equal(flaggedShare(compositionAt(brand(id), 2018)), 0, `${id} before the 2019 Anta deal shows no China capital`);
+}
+assert.equal(compositionAt(brand('arcteryx'), 2003).era.parent, 'adidas-Salomon AG', "Arc'teryx sits under adidas-Salomon in 2003");
 assert.equal(compositionAt(BRANDS.find((b) => b.id === 'hoka'), 2010).era.parent, 'HOKA One One SAS', 'Hoka is French-owned before Deckers');
 
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);
 }
-console.log(`ok: ${BRANDS.length} brands, ${Object.keys(SOURCES).length} sources, years 1964-2026`);
+console.log(`ok: ${BRANDS.length} brands, ${Object.keys(SOURCES).length} sources, years ${firstYear}-2026`);

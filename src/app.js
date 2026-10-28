@@ -1,5 +1,5 @@
 import { BRANDS, REGIONS, SOURCES } from './data.js';
-import { EVENT_TYPES, brandsTouching, byId, compositionAt, dealCount, flaggedShare, sankeyGraph, yearOf } from './model.js';
+import { EVENT_TYPES, FIRST_YEAR, brandsTouching, byId, compositionAt, dealCount, flaggedShare, sankeyGraph, yearOf } from './model.js';
 
 const state = { year: 2026, selected: null };
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -11,10 +11,11 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const yearInput = document.getElementById('year');
 const yearOut = document.getElementById('year-out');
 const panel = document.getElementById('panel');
+yearInput.min = FIRST_YEAR;
 
 function readHash() {
   const p = new URLSearchParams(location.hash.slice(1));
-  if (p.has('year')) state.year = Math.min(2026, Math.max(1964, Number(p.get('year')) || 2026));
+  if (p.has('year')) state.year = Math.min(2026, Math.max(FIRST_YEAR, Number(p.get('year')) || 2026));
   if (p.has('brand') && byId[p.get('brand')]) state.selected = `brand:${p.get('brand')}`;
 }
 
@@ -122,9 +123,10 @@ function brandPanel(brand) {
   const comp = compositionAt(brand, state.year);
   const cn = comp ? flaggedShare(comp) : 0;
   const everFlagged = brand.events.some(isFlaggedEvent);
+  const inherited = comp?.inheritedFrom ? `${esc(brand.name)} 為 ${esc(comp.inheritedFrom)} 全資子公司，股東結構同母公司。` : '';
   const basis = comp?.snapshot
-    ? `${comp.snapshot.basis}，截至 ${comp.snapshot.asOf}。${sourceList([comp.snapshot.source])}`
-    : comp?.inheritedFrom ? `${esc(brand.name)} 為 ${esc(comp.inheritedFrom)} 全資子公司，股東結構同母公司。` : '本期未找到逐一揭露的持股資料。';
+    ? `${inherited}${esc(comp.snapshot.basis)}，截至 ${esc(comp.snapshot.asOf)}。${sourceList([comp.snapshot.source])}`
+    : inherited || '本期未找到逐一揭露的持股資料。';
 
   return `<h2>${esc(brand.name)}</h2>
     <div class="note">發源地：${esc(REGIONS[brand.origin].label)}｜創立：${brand.founded}</div>
@@ -180,7 +182,7 @@ function render() {
 let timer = null;
 document.getElementById('play').addEventListener('click', (ev) => {
   if (timer) { clearInterval(timer); timer = null; ev.target.textContent = '▶ 播放'; return; }
-  if (state.year >= 2026) setYear(1964);
+  if (state.year >= 2026) setYear(FIRST_YEAR);
   ev.target.textContent = '❚❚ 暫停';
   timer = setInterval(() => {
     if (state.year >= 2026) { clearInterval(timer); timer = null; ev.target.textContent = '▶ 播放'; return; }
