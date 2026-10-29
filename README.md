@@ -26,7 +26,7 @@ All data lives in `src/data.js`.
 
 1. Add sources to `SOURCES`.
 2. Add a `BRANDS` entry with eras, snapshots, and events.
-3. Add the brand's logo as `assets/logos/<id>.svg` with a transparent background. The current logos come from each brand's Wikipedia infobox or Wikimedia Commons file.
+3. Add the brand's logo as `assets/logos/<id>.svg` with a transparent background, and record where you found it in `assets/logos/SOURCES.md`.
 4. Run `npm run check`. It fails on a missing logo, a missing or unused source, holder percentages over 100, or an out-of-order era.
 
 ## Limits
