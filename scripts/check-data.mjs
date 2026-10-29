@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { BRANDS, GROUPS, REGIONS, SOURCES } from '../src/data.js';
 import { FIRST_YEAR as firstYear, compositionAt, flaggedShare, sankeyGraph, yearOf } from '../src/model.js';
 
@@ -31,6 +32,8 @@ for (const brand of [...BRANDS, ...Object.values(GROUPS)].map((b) => ({ id: b.na
     }
   }
 }
+
+for (const brand of BRANDS) check(existsSync(new URL(`../assets/logos/${brand.id}.svg`, import.meta.url)), `${brand.id}: missing assets/logos/${brand.id}.svg`);
 
 for (const key of Object.keys(SOURCES)) check(used.has(key), `source ${key} is never cited`);
 for (const [key, s] of Object.entries(SOURCES)) check(/^https:\/\//.test(s.url), `source ${key} has a non-https url`);
