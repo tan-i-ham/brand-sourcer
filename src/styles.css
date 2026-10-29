@@ -40,6 +40,8 @@ button { font: inherit; border: 1px solid var(--line); background: var(--surface
 .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 14px; }
 .card { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
 .card.active { border-color: var(--ink); }
+.logo { display: block; height: 32px; max-width: 100%; object-fit: contain; object-position: left; background: #fff; border-radius: 4px; padding: 3px; margin-bottom: 4px; }
+#panel .logo { height: 56px; margin-bottom: 8px; }
 .card .name { font-weight: 700; }
 .card .meta { color: var(--muted); font-size: 12px; }
 .card .cn { font-size: 13px; font-variant-numeric: tabular-nums; }

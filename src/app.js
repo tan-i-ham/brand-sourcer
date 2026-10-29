@@ -7,6 +7,7 @@ const regionColor = (region) => REGIONS[region].flagged ? css('--flagged') : reg
 const fmtPct = (p) => `${p.toFixed(1)}%`;
 const fmtUSD = (v) => v >= 1e9 ? `US$${(v / 1e9).toFixed(2)}B` : v >= 1e6 ? `US$${(v / 1e6).toFixed(1)}M` : `US$${(v / 1e3).toFixed(0)}K`;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const logo = (brand) => `<img class="logo" src="assets/logos/${brand.id}.svg" alt="">`;
 
 const yearInput = document.getElementById('year');
 const yearOut = document.getElementById('year-out');
@@ -44,6 +45,7 @@ function renderCards() {
     const cn = comp ? flaggedShare(comp) : 0;
     const active = state.selected === `brand:${b.id}`;
     return `<button class="card${active ? ' active' : ''}" data-id="brand:${b.id}" ${comp ? '' : 'disabled'}>
+      ${logo(b)}
       <div class="name">${esc(b.name)}</div>
       <div class="meta">${esc(REGIONS[b.origin].label.split(' ')[0])} · ${b.founded}</div>
       <div class="cn${cn > 0 ? ' hit' : ''}">${comp ? `中國資本 ${fmtPct(cn)}` : `${b.eras[0].from} 年後才有資料`}</div>
@@ -128,7 +130,7 @@ function brandPanel(brand) {
     ? `${inherited}${esc(comp.snapshot.basis)}，截至 ${esc(comp.snapshot.asOf)}。${sourceList([comp.snapshot.source])}`
     : inherited || '本期未找到逐一揭露的持股資料。';
 
-  return `<h2>${esc(brand.name)}</h2>
+  return `${logo(brand)}<h2>${esc(brand.name)}</h2>
     <div class="note">發源地：${esc(REGIONS[brand.origin].label)}｜創立：${brand.founded}</div>
     <p>${esc(brand.summary)}</p>
     <div class="stats">
