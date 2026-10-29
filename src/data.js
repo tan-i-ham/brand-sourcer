@@ -8,6 +8,8 @@ export const REGIONS = {
   DE: { label: '德國 Germany' },
   CA: { label: '加拿大 Canada' },
   FI: { label: '芬蘭 Finland' },
+  NO: { label: '挪威 Norway' },
+  SG: { label: '新加坡 Singapore' },
   CN: { label: '中國／香港 China / HK', flagged: true },
   UNDISCLOSED: { label: '未逐一揭露 Undisclosed' },
 };
@@ -72,6 +74,10 @@ export const SOURCES = {
 
   mz_yuho26: { title: '美津濃株式会社 有価証券報告書 第113期（沿革、大株主の状況）', publisher: 'EDINET（金融庁）', date: '2026-06-22', kind: 'filing', url: 'https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/S100YFWX.pdf' },
   mz_yuho25: { title: '美津濃株式会社 有価証券報告書 第112期（大株主の状況）', publisher: 'EDINET（金融庁）', date: '2025-06-19', kind: 'filing', url: 'https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/S100VZPV.pdf' },
+  asics_yuho25: { title: '株式会社アシックス 有価証券報告書 第72期（沿革、大株主の状況、所有者別状況）', publisher: 'EDINET（金融庁）', date: '2026-03-04', kind: 'filing', url: 'https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/S100XOKI.pdf' },
+  asics_yuho24: { title: '株式会社アシックス 有価証券報告書 第71期（大株主の状況）', publisher: 'EDINET（金融庁）', date: '2025-03-31', kind: 'filing', url: 'https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/S100VIXM.pdf' },
+  asics_haglofs_sale: { title: 'アシックスがホグロフスを売却、香港の投資会社に', publisher: 'FASHIONSNAP', date: '2023-12-18', kind: 'news', url: 'https://www.fashionsnap.com/article/2023-12-18/asics-sold-haglofs/' },
+  asics_wiki: { title: 'ASICS', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/ASICS' },
   mz_wiki: { title: 'Mizuno', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Mizuno' },
 };
 
@@ -83,6 +89,8 @@ const TENCENT_NOTE = '中國科技公司（騰訊）。';
 const MIZUNO_FOUNDATION_NOTE = '1970 年依創辦人水野利八遺願設立的公益財團。';
 const JP_TRUST_NOTE = '日本信託銀行代管的信託帳戶，背後投資人（多為退休基金與投信）未揭露。';
 const FOREIGN_CUSTODY_NOTE = '海外機構投資人的託管帳戶，實際投資人與國籍未揭露。';
+const GIC_NOTE = '新加坡政府的主權財富基金。';
+const NORWAY_NOTE = '挪威政府名義持股，通常為挪威主權財富基金（Government Pension Fund Global）。';
 const ANAMERED_NOTE ='Lululemon 創辦人 Chip Wilson 的投資公司，主要營業地在加拿大卑詩省。';
 
 export const GROUPS = {
@@ -411,6 +419,59 @@ export const BRANDS = [
       { date: '2020-05', type: 'acquired', title: '收購シャープ産業', stakePct: 100, summary: 'Mizuno 取得神戶運動用品製造商シャープ産業株式會社全部股份，成為完全子公司。', sources: ['mz_yuho26'] },
       { date: '2026-03-31', type: 'note', title: '外國法人合計約 21%', summary: '依股東類別統計，外國法人等持有約 21.0%，金融機構 30.6%，其他法人 23.2%，個人 23.7%。海外託管帳戶背後的實際投資人未揭露，未發現中國或香港投資人列名大股東。', sources: ['mz_yuho26'] },
       { date: '2026-05-12', type: 'stake', title: 'GMO 申報持股 5.01%', to: 'Grantham, Mayo, Van Otterloo & Co.', stakePct: 5.01, counterpartyOrigin: 'US', summary: '美國資產管理公司 GMO 提出大量保有報告書，持股 5.01%。公司無法確認其 3 月 31 日的實際持股，因此未列入大股東表。', sources: ['mz_yuho26'] },
+    ],
+  },
+  {
+    id: 'asics',
+    name: 'ASICS',
+    origin: 'JP',
+    founded: 1949,
+    summary: '1949 年由鬼塚喜八郎在神戶創立鬼塚株式會社（Onitsuka Tiger），1964 年上市，1977 年與 GTO、JELENK 合併並更名為 ASICS。從未被收購；目前沒有單一控股股東，外國法人合計持有約 53%。',
+    eras: [
+      { from: 1949, parent: '鬼塚株式會社', parentOrigin: 'JP', defaultHolders: [{ name: '鬼塚喜八郎（推定，上市前持股未公開）', origin: 'JP', pct: 100 }], snapshots: [] },
+      { from: 1964, parent: 'オニツカ株式會社（神戶／大阪證交所）', parentOrigin: 'JP', defaultHolders: UNRESEARCHED_PUBLIC, snapshots: [] },
+      {
+        from: 1977, parent: '株式會社 ASICS (東證: 7936)', parentOrigin: 'JP', defaultHolders: UNRESEARCHED_PUBLIC,
+        snapshots: [
+          {
+            asOf: '2024-12-31', basis: '發行股數（不含庫藏股）比例，前十大股東（同一託管銀行的多個帳戶合併計算）', source: 'asics_yuho24',
+            holders: [
+              { name: '日本 Master Trust 信託銀行（信託帳戶）', origin: 'JP', pct: 15.9, note: JP_TRUST_NOTE },
+              { name: '日本 Custody 銀行（信託帳戶）', origin: 'JP', pct: 6.6, note: JP_TRUST_NOTE },
+              { name: 'State Street Bank and Trust（託管帳戶）', origin: 'UNDISCLOSED', pct: 5.2, note: `${FOREIGN_CUSTODY_NOTE}三個帳戶合計。` },
+              { name: 'J.P. Morgan Chase Bank（託管帳戶）', origin: 'UNDISCLOSED', pct: 3.2, note: FOREIGN_CUSTODY_NOTE },
+              { name: '日本生命保險', origin: 'JP', pct: 3.2 },
+              { name: 'GIC Private Limited', origin: 'SG', pct: 3.0, note: GIC_NOTE },
+              { name: '挪威政府 (Government of Norway)', origin: 'NO', pct: 2.3, note: NORWAY_NOTE },
+              { name: 'JPモルガン證券（日本）', origin: 'UNDISCLOSED', pct: 2.1, note: 'JPMorgan 在日本的證券子公司，持股多為客戶或借券部位，實際投資人未揭露。' },
+            ],
+          },
+          {
+            asOf: '2025-12-31', basis: '發行股數（不含庫藏股）比例，前十大股東（同一託管銀行的多個帳戶合併計算）', source: 'asics_yuho25',
+            holders: [
+              { name: '日本 Master Trust 信託銀行（信託帳戶）', origin: 'JP', pct: 16.0, note: JP_TRUST_NOTE },
+              { name: '日本 Custody 銀行（信託帳戶）', origin: 'JP', pct: 7.3, note: JP_TRUST_NOTE },
+              { name: 'State Street Bank and Trust（託管帳戶）', origin: 'UNDISCLOSED', pct: 3.3, note: `${FOREIGN_CUSTODY_NOTE}兩個帳戶合計。` },
+              { name: 'J.P. Morgan Chase Bank（託管帳戶）', origin: 'UNDISCLOSED', pct: 3.0, note: `${FOREIGN_CUSTODY_NOTE}兩個帳戶合計。` },
+              { name: 'Chase Manhattan Bank London（借券綜合帳戶）', origin: 'UNDISCLOSED', pct: 2.9, note: FOREIGN_CUSTODY_NOTE },
+              { name: '挪威政府 (Government of Norway)', origin: 'NO', pct: 2.7, note: NORWAY_NOTE },
+              { name: '日本生命保險', origin: 'JP', pct: 2.6 },
+              { name: 'GIC Private Limited', origin: 'SG', pct: 1.9, note: GIC_NOTE },
+            ],
+          },
+        ],
+      },
+    ],
+    events: [
+      { date: '1949-09', type: 'founded', title: '於神戶創立', summary: '鬼塚喜八郎 1949 年 3 月成立鬼塚商會，同年 9 月改組為鬼塚株式會社，專做運動鞋，品牌為 Onitsuka Tiger。', sources: ['asics_yuho25', 'asics_wiki'] },
+      { date: '1964-02', type: 'ipo', title: '神戶證交所上市', summary: 'オニツカ株式會社 1964 年 2 月於神戶證交所、4 月於大阪證交所二部上市，1972 年於東證二部上市，1974 年升為一部。', sources: ['asics_yuho25'] },
+      { date: '1977-07-21', type: 'rename', title: '三社合併，更名 ASICS', summary: 'オニツカ與運動服裝用品商 GTO、運動服飾商 JELENK 合併，更名為株式會社 ASICS，成為綜合運動用品公司。', sources: ['asics_yuho25'] },
+      { date: '2010-08', type: 'acquired', title: '收購瑞典 Haglöfs', stakePct: 100, summary: 'ASICS 收購瑞典戶外品牌 Haglöfs 的控股公司，收購金額約 113 億日圓。', sources: ['asics_yuho25', 'asics_haglofs_sale'] },
+      { date: '2016-03', type: 'acquired', title: '收購 FitnessKeeper（Runkeeper）', stakePct: 100, summary: 'ASICS 取得美國跑步 App Runkeeper 開發商 FitnessKeeper 全部股份，之後改名為 ASICS Digital。', sources: ['asics_yuho25'] },
+      { date: '2022-08', type: 'acquired', title: '收購アールビーズ（R-bies）', summary: 'ASICS 與日本電視控股共同取得日本跑步賽事平台アールビーズ股份，成為合併子公司。', sources: ['asics_yuho25'] },
+      { date: '2023-12-18', type: 'divested', title: '出售 Haglöfs 給 LionRock Capital', to: 'LionRock Capital（香港）', summary: 'ASICS 將 Haglöfs 售予香港投資公司 LionRock Capital，金額未公開。這是 ASICS 出售子公司給香港資本，不是中國資本入股 ASICS。', sources: ['asics_yuho25', 'asics_haglofs_sale'] },
+      { date: '2025-05-15', type: 'stake', title: '野村資產管理申報持股 5.06%', to: '野村アセットマネジメント', stakePct: 5.06, counterpartyOrigin: 'JP', summary: '野村集團提出大量保有報告書，其中野村資產管理持有 5.06%。公司無法確認基準日實際持股，因此未列入大股東表。', sources: ['asics_yuho25'] },
+      { date: '2025-12-31', type: 'note', title: '外國法人合計約 53%', summary: '依股東類別統計，外國法人等持有 53.44%，金融機構 29.86%，個人 12.49%。海外託管帳戶背後的實際投資人未揭露，前十大股東中沒有中國或香港投資人。', sources: ['asics_yuho25'] },
     ],
   },
   {
