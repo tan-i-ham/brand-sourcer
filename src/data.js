@@ -69,6 +69,10 @@ export const SOURCES = {
   mb_founder: { title: 'Founder Isamu Tatsuno', publisher: 'montbell (official)', kind: 'company', url: 'https://en.montbell.jp:443/company/founder/' },
   mb_uk: { title: 'About montbell', publisher: 'montbell UK (official)', kind: 'company', url: 'https://www.montbell.co.uk/pages/about-montbell' },
   mb_bunshun: { title: 'モンベル代表取締役会長 辰野勇', publisher: '文藝春秋', kind: 'news', url: 'https://bunshun.jp/bungeishunju/articles/h10197' },
+
+  mz_yuho26: { title: '美津濃株式会社 有価証券報告書 第113期（沿革、大株主の状況）', publisher: 'EDINET（金融庁）', date: '2026-06-22', kind: 'filing', url: 'https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/S100YFWX.pdf' },
+  mz_yuho25: { title: '美津濃株式会社 有価証券報告書 第112期（大株主の状況）', publisher: 'EDINET（金融庁）', date: '2025-06-19', kind: 'filing', url: 'https://disclosure2dl.edinet-fsa.go.jp/searchdocument/pdf/S100VZPV.pdf' },
+  mz_wiki: { title: 'Mizuno', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Mizuno' },
 };
 
 const UNRESEARCHED_PUBLIC = [{ name: '公開市場股東（本期尚未研究）', origin: 'UNDISCLOSED', pct: 100 }];
@@ -76,7 +80,10 @@ const UNRESEARCHED_PUBLIC = [{ name: '公開市場股東（本期尚未研究）
 const ANTA_NOTE = '香港上市的中國運動用品公司（安踏體育）。';
 const FOUNTAINVEST_NOTE = '亞洲私募基金（方源資本），持股基金名為 FountainVest China Capital Partners Fund III。';
 const TENCENT_NOTE = '中國科技公司（騰訊）。';
-const ANAMERED_NOTE = 'Lululemon 創辦人 Chip Wilson 的投資公司，主要營業地在加拿大卑詩省。';
+const MIZUNO_FOUNDATION_NOTE = '1970 年依創辦人水野利八遺願設立的公益財團。';
+const JP_TRUST_NOTE = '日本信託銀行代管的信託帳戶，背後投資人（多為退休基金與投信）未揭露。';
+const FOREIGN_CUSTODY_NOTE = '海外機構投資人的託管帳戶，實際投資人與國籍未揭露。';
+const ANAMERED_NOTE ='Lululemon 創辦人 Chip Wilson 的投資公司，主要營業地在加拿大卑詩省。';
 
 export const GROUPS = {
   amer: {
@@ -348,6 +355,62 @@ export const BRANDS = [
     events: [
       { date: '1975-08-01', type: 'founded', title: '於大阪創立', summary: '辰野勇 28 歲時創立モンベル，第一項產品為化纖睡袋。創業靈感來自 1969 年攀登艾格峰北壁。', sources: ['mb_founder', 'mb_uk'] },
       { date: '2024', type: 'note', title: '家族接班', summary: '辰野勇為代表取締役會長，辰野岳史為代表取締役社長；公司未公開股東結構。', sources: ['mb_bunshun'] },
+    ],
+  },
+  {
+    id: 'mizuno',
+    name: 'Mizuno',
+    origin: 'JP',
+    founded: 1906,
+    summary: '1906 年由水野利八與弟弟水野利三在大阪創立，1961 年起在日本上市（東證 8022），從未被收購。最大股東是創辦人遺願設立的Mizuno 運動振興財團，社長水野明人為創辦家族成員。',
+    eras: [
+      { from: 1906, parent: '水野兄弟商會', parentOrigin: 'JP', defaultHolders: [{ name: '水野家族（推定，上市前持股未公開）', origin: 'JP', pct: 100 }], snapshots: [] },
+      {
+        from: 1961, parent: '美津濃株式會社 (東證: 8022)', parentOrigin: 'JP', defaultHolders: UNRESEARCHED_PUBLIC,
+        snapshots: [
+          {
+            asOf: '2025-03-31', basis: '發行股數（不含庫藏股）比例，前十大股東', source: 'mz_yuho25',
+            holders: [
+              { name: 'Mizuno 運動振興財團', origin: 'JP', pct: 17.1, note: MIZUNO_FOUNDATION_NOTE },
+              { name: '日本 Master Trust 信託銀行（信託帳戶）', origin: 'JP', pct: 13.1, note: JP_TRUST_NOTE },
+              { name: '日本 Custody 銀行（信託帳戶）', origin: 'JP', pct: 8.3, note: JP_TRUST_NOTE },
+              { name: 'State Street Bank and Trust（託管帳戶）', origin: 'UNDISCLOSED', pct: 6.8, note: FOREIGN_CUSTODY_NOTE },
+              { name: '三井住友銀行', origin: 'JP', pct: 3.6 },
+              { name: 'J.P. Morgan Chase Bank（託管帳戶）', origin: 'UNDISCLOSED', pct: 3.1, note: FOREIGN_CUSTODY_NOTE },
+              { name: '日本生命保險', origin: 'JP', pct: 2.7 },
+              { name: '美津濃員工持股會', origin: 'JP', pct: 2.0 },
+              { name: 'BNY Mellon（託管帳戶）', origin: 'UNDISCLOSED', pct: 1.7, note: FOREIGN_CUSTODY_NOTE },
+              { name: '第一生命保險', origin: 'JP', pct: 1.3 },
+            ],
+          },
+          {
+            asOf: '2026-03-31', basis: '發行股數（不含庫藏股）比例，前十大股東', source: 'mz_yuho26',
+            holders: [
+              { name: 'Mizuno 運動振興財團', origin: 'JP', pct: 17.3, note: MIZUNO_FOUNDATION_NOTE },
+              { name: '日本 Master Trust 信託銀行（信託帳戶）', origin: 'JP', pct: 10.5, note: JP_TRUST_NOTE },
+              { name: '日本 Custody 銀行（信託帳戶）', origin: 'JP', pct: 9.9, note: JP_TRUST_NOTE },
+              { name: 'State Street Bank and Trust（託管帳戶）', origin: 'UNDISCLOSED', pct: 7.2, note: FOREIGN_CUSTODY_NOTE },
+              { name: '三井住友銀行', origin: 'JP', pct: 3.7 },
+              { name: 'J.P. Morgan Chase Bank（託管帳戶）', origin: 'UNDISCLOSED', pct: 3.0, note: FOREIGN_CUSTODY_NOTE },
+              { name: '日本生命保險', origin: 'JP', pct: 2.7 },
+              { name: '美津濃員工持股會', origin: 'JP', pct: 1.9 },
+              { name: '第一生命保險', origin: 'JP', pct: 1.5 },
+              { name: 'BNY Mellon（託管帳戶）', origin: 'UNDISCLOSED', pct: 1.4, note: FOREIGN_CUSTODY_NOTE },
+            ],
+          },
+        ],
+      },
+    ],
+    events: [
+      { date: '1906-04', type: 'founded', title: '於大阪創立', summary: '水野利八在大阪市北區創立水野兄弟商會，製造販售運動服裝；1913 年開始生產棒球與手套。', sources: ['mz_yuho26', 'mz_wiki'] },
+      { date: '1923-07', type: 'note', title: '改組為股份公司', summary: '改組為美津濃運動用品株式會社（資本額 150 萬日圓），1942 年 1 月更名為美津濃株式會社。', sources: ['mz_yuho26'] },
+      { date: '1961-10', type: 'ipo', title: '大阪證交所上市', summary: '1961 年 10 月於大阪證交所二部上市，1962 年 12 月於東京證交所二部上市，1972 年升為一部；2022 年起屬東證 Prime 市場。', sources: ['mz_yuho26'] },
+      { date: '1970-09', type: 'note', title: '設立水野運動振興會', summary: '依創辦人水野利八遺願設立財團，即今日的公益財團法人 Mizuno 運動振興財團（ミズノスポーツ振興財団），現為最大股東（約 17%）。', sources: ['mz_yuho26', 'mz_wiki'] },
+      { date: '2012-06', type: 'acquired', title: '收購セノー（SENOH）', stakePct: 100, summary: 'Mizuno 取得日本體育器材製造商セノー株式會社全部股份，成為完全子公司。', sources: ['mz_yuho26'] },
+      { date: '2013-01', type: 'acquired', title: '收購義大利代理商', stakePct: 100, summary: 'Mizuno 取得義大利原代理商全部股權，改名為 MIZUNO ITALIA S.R.L.。', sources: ['mz_yuho26'] },
+      { date: '2020-05', type: 'acquired', title: '收購シャープ産業', stakePct: 100, summary: 'Mizuno 取得神戶運動用品製造商シャープ産業株式會社全部股份，成為完全子公司。', sources: ['mz_yuho26'] },
+      { date: '2026-03-31', type: 'note', title: '外國法人合計約 21%', summary: '依股東類別統計，外國法人等持有約 21.0%，金融機構 30.6%，其他法人 23.2%，個人 23.7%。海外託管帳戶背後的實際投資人未揭露，未發現中國或香港投資人列名大股東。', sources: ['mz_yuho26'] },
+      { date: '2026-05-12', type: 'stake', title: 'GMO 申報持股 5.01%', to: 'Grantham, Mayo, Van Otterloo & Co.', stakePct: 5.01, counterpartyOrigin: 'US', summary: '美國資產管理公司 GMO 提出大量保有報告書，持股 5.01%。公司無法確認其 3 月 31 日的實際持股，因此未列入大股東表。', sources: ['mz_yuho26'] },
     ],
   },
   {
