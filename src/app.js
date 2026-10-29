@@ -113,9 +113,20 @@ function sourceList(keys) {
   }).join('')}</ol>`;
 }
 
+function compositionPie(comp) {
+  const size = 180;
+  const arc = d3.arc().innerRadius(size * 0.28).outerRadius(size / 2 - 2).padAngle(0.012).cornerRadius(2);
+  const slices = d3.pie().sort(null).value((h) => h.pct)(comp.holders);
+  return `<svg class="pie" viewBox="${-size / 2} ${-size / 2} ${size} ${size}" role="img" aria-label="${state.year} 年資本組成">
+    ${slices.map((s) => `<path d="${arc(s)}" fill="${regionColor(s.data.origin)}"><title>${esc(s.data.name)}\n${fmtPct(s.data.pct)}</title></path>`).join('')}
+    <text class="pie-center" dy="-0.2em">${fmtPct(flaggedShare(comp))}</text>
+    <text class="pie-sub" dy="1.2em">中國資本</text>
+  </svg>`;
+}
+
 function compositionTable(comp) {
   return `<table>${comp.holders.map((h) => `<tr class="${REGIONS[h.origin].flagged ? 'flagged' : ''}">
-      <td>${esc(h.name)}<div class="note">${esc(REGIONS[h.origin].label)}${h.note ? `｜${esc(h.note)}` : ''}</div></td>
+      <td><span class="sw" style="background:${regionColor(h.origin)}"></span>${esc(h.name)}<div class="note">${esc(REGIONS[h.origin].label)}${h.note ? `｜${esc(h.note)}` : ''}</div></td>
       <td class="num">${fmtPct(h.pct)}</td></tr>`).join('')}</table>`;
 }
 
@@ -139,7 +150,7 @@ function brandPanel(brand) {
       <div class="stat${cn > 0 ? ' hit' : ''}"><b>${fmtPct(cn)}</b><span>${state.year} 年中國資本</span></div>
       <div class="stat${everFlagged ? ' hit' : ''}"><b>${everFlagged ? '曾有' : '無'}</b><span>歷史上中國資本</span></div>
     </div>
-    ${comp ? `<h3>${state.year} 年資本組成｜母公司：${esc(comp.era.parent)}</h3>${compositionTable(comp)}<p class="note">${basis}</p>` : `<p class="hint">${state.year} 年尚無此品牌資料。</p>`}
+    ${comp ? `<h3>${state.year} 年資本組成｜母公司：${esc(comp.era.parent)}</h3>${compositionPie(comp)}${compositionTable(comp)}<p class="note">${basis}</p>` : `<p class="hint">${state.year} 年尚無此品牌資料。</p>`}
     <h3>時間軸（點日期跳到該年）</h3>
     <ol class="timeline">${brand.events.map((e) => {
       const y = yearOf(e.date);

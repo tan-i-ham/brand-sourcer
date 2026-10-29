@@ -76,6 +76,11 @@ main { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 16px; ma
 .stat b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
 .stat span { font-size: 12px; color: var(--muted); }
 .stat.hit b { color: var(--flagged); }
+.pie { display: block; width: 180px; margin: 4px auto 10px; }
+.pie path { stroke: var(--surface); stroke-width: 1; }
+.pie text { text-anchor: middle; fill: var(--ink); }
+.pie .pie-center { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.pie .pie-sub { font-size: 11px; fill: var(--muted); }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 td { padding: 4px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 8px; }
