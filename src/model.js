@@ -1,6 +1,6 @@
 import { BRANDS, GROUPS, REGIONS } from './data.js';
 
-export const REMAINDER_NAME = { zh: '其他公開市場股東（未逐一揭露）', en: 'Other public-market shareholders (not individually disclosed)' };
+export const REMAINDER_NAME = { zh: '其他公開市場股東（未逐一揭露）', en: 'Other public holders (undisclosed)' };
 
 // Node ids must not change with the language, so they are keyed on the zh text.
 export const idKey = (v) => typeof v === 'string' ? v : v.zh;

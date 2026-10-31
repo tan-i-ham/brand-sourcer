@@ -81,7 +81,7 @@ export const SOURCES = {
   mz_wiki: { title: 'Mizuno', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Mizuno' },
 };
 
-const UNRESEARCHED_PUBLIC = [{ name: { zh: '公開市場股東（本期尚未研究）', en: 'Public-market shareholders (not yet researched for this period)' }, origin: 'UNDISCLOSED', pct: 100 }];
+const UNRESEARCHED_PUBLIC = [{ name: { zh: '公開市場股東（本期尚未研究）', en: 'Public holders (not yet researched)' }, origin: 'UNDISCLOSED', pct: 100 }];
 
 const both = (a, b) => ({ zh: a.zh + b.zh, en: `${a.en} ${b.en}` });
 
