@@ -1,6 +1,9 @@
 import { BRANDS, GROUPS, REGIONS } from './data.js';
 
-export const REMAINDER_NAME = '其他公開市場股東（未逐一揭露）';
+export const REMAINDER_NAME = { zh: '其他公開市場股東（未逐一揭露）', en: 'Other public-market shareholders (not individually disclosed)' };
+
+// Node ids must not change with the language, so they are keyed on the zh text.
+export const idKey = (v) => typeof v === 'string' ? v : v.zh;
 
 const byId = Object.fromEntries(BRANDS.map((b) => [b.id, b]));
 const owners = { ...GROUPS, ...byId };
@@ -49,10 +52,10 @@ export function sankeyGraph(year, focusBrandId = null) {
     const comp = compositionAt(brand, year);
     if (!comp) continue;
     const brandId = node(`brand:${brand.id}`, { kind: 'brand', label: brand.name, brandId: brand.id, region: brand.origin });
-    const parentId = node(`parent:${comp.era.parent}`, { kind: 'parent', label: comp.era.parent, region: comp.era.parentOrigin });
+    const parentId = node(`parent:${idKey(comp.era.parent)}`, { kind: 'parent', label: comp.era.parent, region: comp.era.parentOrigin });
     link(parentId, brandId, 100);
     for (const h of comp.holders) {
-      const holderId = node(`holder:${h.name}`, { kind: 'holder', label: h.name, region: h.origin });
+      const holderId = node(`holder:${idKey(h.name)}`, { kind: 'holder', label: h.name, region: h.origin });
       const regionId = node(`region:${h.origin}`, { kind: 'region', label: REGIONS[h.origin].label, region: h.origin });
       link(regionId, holderId, h.pct);
       link(holderId, parentId, h.pct);
@@ -68,27 +71,26 @@ export function brandsTouching(nodeId, year) {
     const comp = compositionAt(brand, year);
     if (!comp) return [];
     const matches = comp.holders.filter((h) =>
-      (kind === 'holder' && h.name === key) || (kind === 'region' && h.origin === key) || kind === 'parent');
-    if (kind === 'parent' && comp.era.parent !== key) return [];
+      (kind === 'holder' && idKey(h.name) === key) || (kind === 'region' && h.origin === key) || kind === 'parent');
+    if (kind === 'parent' && idKey(comp.era.parent) !== key) return [];
     const pct = kind === 'parent' ? 100 : matches.reduce((s, h) => s + h.pct, 0);
     return pct > 0 ? [{ brand, pct, holders: matches }] : [];
   });
 }
 
-export const EVENT_TYPES = {
-  founded: '創立',
-  acquired: '收購／易主',
-  stake: '入股／持股變動',
-  divested: '出售／減持',
-  ipo: '上市',
-  rights: '商標權',
-  rename: '更名',
-  note: '備註',
-};
-
 export function dealCount(brand, type) {
   return brand.events.filter((e) => e.type === type).length;
 }
+
+const nodeLabels = new Map([
+  ...Object.entries(REGIONS).map(([code, r]) => [`region:${code}`, r.label]),
+  [`holder:${idKey(REMAINDER_NAME)}`, REMAINDER_NAME],
+  ...Object.values(owners).flatMap((o) => o.eras).flatMap((e) => [
+    [`parent:${idKey(e.parent)}`, e.parent],
+    ...[...(e.defaultHolders ?? []), ...e.snapshots.flatMap((s) => s.holders)].map((h) => [`holder:${idKey(h.name)}`, h.name]),
+  ]),
+]);
+export const nodeLabel = (id) => nodeLabels.get(id);
 
 export const FIRST_YEAR = Math.min(...BRANDS.map((b) => b.eras[0].from));
 
