@@ -1,7 +1,9 @@
 import { BRANDS, REGIONS, SOURCES } from './data.js';
-import { EVENT_TYPES, FIRST_YEAR, brandsTouching, byId, compositionAt, dealCount, flaggedShare, sankeyGraph, yearOf } from './model.js';
+import { FIRST_YEAR, brandsTouching, byId, compositionAt, dealCount, flaggedShare, nodeLabel, sankeyGraph, yearOf } from './model.js';
+import { LANGS, UI, localize } from './i18n.js';
 
-const state = { year: 2026, selected: null };
+const state = { year: 2026, selected: null, lang: 'zh' };
+const tx = (v) => localize(v, state.lang);
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const regionColor = (region) => REGIONS[region].flagged ? css('--flagged') : region === 'UNDISCLOSED' ? css('--undisclosed') : css('--other');
 const fmtPct = (p) => `${p.toFixed(1)}%`;
@@ -12,17 +14,20 @@ const logo = (brand) => `<img class="logo" src="assets/logos/${brand.id}.svg" al
 const yearInput = document.getElementById('year');
 const yearOut = document.getElementById('year-out');
 const panel = document.getElementById('panel');
+const playBtn = document.getElementById('play');
 yearInput.min = FIRST_YEAR;
 
 function readHash() {
   const p = new URLSearchParams(location.hash.slice(1));
   if (p.has('year')) state.year = Math.min(2026, Math.max(FIRST_YEAR, Number(p.get('year')) || 2026));
   if (p.has('brand') && byId[p.get('brand')]) state.selected = `brand:${p.get('brand')}`;
+  if (LANGS.includes(p.get('lang'))) state.lang = p.get('lang');
 }
 
 function writeHash() {
   const p = new URLSearchParams({ year: state.year });
   if (state.selected?.startsWith('brand:')) p.set('brand', state.selected.slice(6));
+  if (state.lang !== 'zh') p.set('lang', state.lang);
   history.replaceState(null, '', `#${p}`);
 }
 
@@ -33,12 +38,28 @@ function setYear(year) {
   render();
 }
 
+function setLang(lang) {
+  state.lang = lang;
+  render();
+}
+
 function select(id) {
   state.selected = id === state.selected && id.startsWith('brand:') ? null : id;
   render();
 }
 
+function renderStatic() {
+  const u = UI[state.lang];
+  document.documentElement.lang = state.lang === 'zh' ? 'zh-Hant-TW' : 'en';
+  document.title = u.title;
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = u[el.dataset.i18n]; });
+  document.querySelectorAll('[data-i18n-label]').forEach((el) => el.setAttribute('aria-label', u[el.dataset.i18nLabel]));
+  document.querySelectorAll('.lang-toggle button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === state.lang));
+  playBtn.textContent = timer ? u.pause : u.play;
+}
+
 function renderCards() {
+  const u = UI[state.lang];
   const el = document.getElementById('cards');
   el.innerHTML = BRANDS.map((b) => {
     const comp = compositionAt(b, state.year);
@@ -46,9 +67,9 @@ function renderCards() {
     const active = state.selected === `brand:${b.id}`;
     return `<button class="card${active ? ' active' : ''}" data-id="brand:${b.id}" ${comp ? '' : 'disabled'}>
       ${logo(b)}
-      <div class="name">${esc(b.name)}</div>
-      <div class="meta">${esc(REGIONS[b.origin].label.split(' ')[0])} · ${b.founded}</div>
-      <div class="cn${cn > 0 ? ' hit' : ''}">${comp ? `中國資本 ${fmtPct(cn)}` : `${b.eras[0].from} 年後才有資料`}</div>
+      <div class="name">${esc(tx(b.name))}</div>
+      <div class="meta">${esc(tx(REGIONS[b.origin].label))} · ${b.founded}</div>
+      <div class="cn${cn > 0 ? ' hit' : ''}">${comp ? u.chinaCapital(fmtPct(cn)) : u.dataFrom(b.eras[0].from)}</div>
     </button>`;
   }).join('');
   el.querySelectorAll('.card:not([disabled])').forEach((c) => c.addEventListener('click', () => select(c.dataset.id)));
@@ -60,7 +81,7 @@ function renderSankey() {
   document.getElementById('show-all').hidden = !focus;
   const graph = sankeyGraph(state.year, focus);
   if (!graph.nodes.length) {
-    container.innerHTML = `<p class="hint">${state.year} 年尚無 ${esc(byId[focus].name)} 的資料，請把年份往後拉。</p>`;
+    container.innerHTML = `<p class="hint">${UI[state.lang].noDataYet(state.year, esc(tx(byId[focus].name)))}</p>`;
     return;
   }
   const width = Math.max(container.clientWidth, 760);
@@ -86,7 +107,7 @@ function renderSankey() {
     .attr('stroke-opacity', (l) => state.selected && !touches(l) ? 0.15 : 0.4)
     .attr('stroke-width', (l) => Math.max(1, l.width))
     .on('click', (_, l) => select(l.target.kind === 'brand' ? l.target.id : l.source.id))
-    .append('title').text((l) => `${l.source.label} → ${l.target.label}\n${l.value.toFixed(1)}`);
+    .append('title').text((l) => `${tx(l.source.label)} → ${tx(l.target.label)}\n${l.value.toFixed(1)}`);
 
   const node = svg.append('g').selectAll('g').data(nodes).join('g')
     .attr('class', (d) => `node${d.id === state.selected ? ' selected' : ''}`)
@@ -95,13 +116,13 @@ function renderSankey() {
     .attr('x', (d) => d.x0).attr('y', (d) => d.y0)
     .attr('width', (d) => d.x1 - d.x0).attr('height', (d) => Math.max(1, d.y1 - d.y0))
     .attr('fill', (d) => d.kind === 'brand' ? css('--ink') : regionColor(d.region));
-  node.append('title').text((d) => d.label);
+  node.append('title').text((d) => tx(d.label));
   node.append('text')
     .attr('x', (d) => d.x1 + 6)
     .attr('y', (d) => (d.y0 + d.y1) / 2)
     .attr('dy', '0.35em')
     .attr('font-weight', (d) => d.kind === 'brand' ? 700 : 400)
-    .text((d) => d.label);
+    .text((d) => tx(d.label));
 
   container.replaceChildren(svg.node());
 }
@@ -117,67 +138,67 @@ function compositionPie(comp) {
   const size = 180;
   const arc = d3.arc().innerRadius(size * 0.28).outerRadius(size / 2 - 2).padAngle(0.012).cornerRadius(2);
   const slices = d3.pie().sort(null).value((h) => h.pct)(comp.holders);
-  return `<svg class="pie" viewBox="${-size / 2} ${-size / 2} ${size} ${size}" role="img" aria-label="${state.year} 年資本組成">
-    ${slices.map((s) => `<path d="${arc(s)}" fill="${regionColor(s.data.origin)}"><title>${esc(s.data.name)}\n${fmtPct(s.data.pct)}</title></path>`).join('')}
+  return `<svg class="pie" viewBox="${-size / 2} ${-size / 2} ${size} ${size}" role="img" aria-label="${UI[state.lang].compositionAria(state.year)}">
+    ${slices.map((s) => `<path d="${arc(s)}" fill="${regionColor(s.data.origin)}"><title>${esc(tx(s.data.name))}\n${fmtPct(s.data.pct)}</title></path>`).join('')}
     <text class="pie-center" dy="-0.2em">${fmtPct(flaggedShare(comp))}</text>
-    <text class="pie-sub" dy="1.2em">中國資本</text>
+    <text class="pie-sub" dy="1.2em">${UI[state.lang].pieSub}</text>
   </svg>`;
 }
 
 function compositionTable(comp) {
+  const { sep } = UI[state.lang];
   return `<table>${comp.holders.map((h) => `<tr class="${REGIONS[h.origin].flagged ? 'flagged' : ''}">
-      <td><span class="sw" style="background:${regionColor(h.origin)}"></span>${esc(h.name)}<div class="note">${esc(REGIONS[h.origin].label)}${h.note ? `｜${esc(h.note)}` : ''}</div></td>
+      <td><span class="sw" style="background:${regionColor(h.origin)}"></span>${esc(tx(h.name))}<div class="note">${esc(tx(REGIONS[h.origin].label))}${h.note ? `${sep}${esc(tx(h.note))}` : ''}</div></td>
       <td class="num">${fmtPct(h.pct)}</td></tr>`).join('')}</table>`;
 }
 
 const isFlaggedEvent = (e) => Boolean(REGIONS[e.counterpartyOrigin]?.flagged);
 
 function brandPanel(brand) {
+  const u = UI[state.lang];
   const comp = compositionAt(brand, state.year);
   const cn = comp ? flaggedShare(comp) : 0;
   const everFlagged = brand.events.some(isFlaggedEvent);
-  const inherited = comp?.inheritedFrom ? `${esc(brand.name)} 為 ${esc(comp.inheritedFrom)} 全資子公司，股東結構同母公司。` : '';
+  const inherited = comp?.inheritedFrom ? u.inherited(esc(tx(brand.name)), esc(tx(comp.inheritedFrom))) : '';
   const basis = comp?.snapshot
-    ? `${inherited}${esc(comp.snapshot.basis)}，截至 ${esc(comp.snapshot.asOf)}。${sourceList([comp.snapshot.source])}`
-    : inherited || '本期未找到逐一揭露的持股資料。';
+    ? `${u.snapshotNote(inherited, esc(tx(comp.snapshot.basis)), esc(comp.snapshot.asOf))}${sourceList([comp.snapshot.source])}`
+    : inherited || u.noHoldings;
 
-  return `${logo(brand)}<h2>${esc(brand.name)}</h2>
-    <div class="note">發源地：${esc(REGIONS[brand.origin].label)}｜創立：${brand.founded}</div>
-    <p>${esc(brand.summary)}</p>
+  return `${logo(brand)}<h2>${esc(tx(brand.name))}</h2>
+    <div class="note">${u.originLine(esc(tx(REGIONS[brand.origin].label)), brand.founded)}</div>
+    <p>${esc(tx(brand.summary))}</p>
     <div class="stats">
-      <div class="stat"><b>${dealCount(brand, 'acquired')}</b><span>收購／易主</span></div>
-      <div class="stat"><b>${dealCount(brand, 'divested')}</b><span>出售／減持</span></div>
-      <div class="stat${cn > 0 ? ' hit' : ''}"><b>${fmtPct(cn)}</b><span>${state.year} 年中國資本</span></div>
-      <div class="stat${everFlagged ? ' hit' : ''}"><b>${everFlagged ? '曾有' : '無'}</b><span>歷史上中國資本</span></div>
+      <div class="stat"><b>${dealCount(brand, 'acquired')}</b><span>${u.acquired}</span></div>
+      <div class="stat"><b>${dealCount(brand, 'divested')}</b><span>${u.divested}</span></div>
+      <div class="stat${cn > 0 ? ' hit' : ''}"><b>${fmtPct(cn)}</b><span>${u.chinaCapitalIn(state.year)}</span></div>
+      <div class="stat${everFlagged ? ' hit' : ''}"><b>${everFlagged ? u.everYes : u.everNo}</b><span>${u.everFlagged}</span></div>
     </div>
-    ${comp ? `<h3>${state.year} 年資本組成｜母公司：${esc(comp.era.parent)}</h3>${compositionPie(comp)}${compositionTable(comp)}<p class="note">${basis}</p>` : `<p class="hint">${state.year} 年尚無此品牌資料。</p>`}
-    <h3>時間軸（點日期跳到該年）</h3>
+    ${comp ? `<h3>${u.compositionHeading(state.year, esc(tx(comp.era.parent)))}</h3>${compositionPie(comp)}${compositionTable(comp)}<p class="note">${basis}</p>` : `<p class="hint">${u.noBrandData(state.year)}</p>`}
+    <h3>${u.timelineHeading}</h3>
     <ol class="timeline">${brand.events.map((e) => {
       const y = yearOf(e.date);
       const deal = e.type === 'acquired' || e.type === 'divested';
       const flagged = isFlaggedEvent(e);
       return `<li class="${deal ? 'deal' : ''}${flagged ? ' flagged' : ''}${y === state.year ? ' current' : ''}">
-        <button class="when" data-year="${y}">${esc(e.date)}</button><span class="tag">${EVENT_TYPES[e.type]}</span>
-        <div><b>${esc(e.title)}</b>${e.priceUSD ? `｜${fmtUSD(e.priceUSD)}` : ''}${e.stakePct ? `｜${e.stakePct}%` : ''}</div>
-        <p>${esc(e.summary)}</p>${sourceList(e.sources)}</li>`;
+        <button class="when" data-year="${y}">${esc(e.date)}</button><span class="tag">${u.eventType[e.type]}</span>
+        <div><b>${esc(tx(e.title))}</b>${e.priceUSD ? `${u.sep}${fmtUSD(e.priceUSD)}` : ''}${e.stakePct ? `${u.sep}${e.stakePct}%` : ''}</div>
+        <p>${esc(tx(e.summary))}</p>${sourceList(e.sources)}</li>`;
     }).join('')}</ol>`;
 }
 
 function nodePanel(id) {
-  const [kind, ...rest] = id.split(':');
-  const label = rest.join(':');
-  const title = kind === 'region' ? REGIONS[label].label : label;
-  const kindLabel = { region: '資本來源地', holder: '股東', parent: '母公司' }[kind];
+  const u = UI[state.lang];
+  const kind = id.split(':')[0];
   const rows = brandsTouching(id, state.year);
-  return `<h2>${esc(title)}</h2><div class="note">${kindLabel}｜${state.year} 年</div>
-    <h3>${kind === 'parent' ? '旗下品牌' : '持有的品牌（佔該品牌資本）'}</h3>
-    <table>${rows.map((r) => `<tr><td><a href="#" data-id="brand:${r.brand.id}">${esc(r.brand.name)}</a></td><td class="num">${fmtPct(r.pct)}</td></tr>`).join('')}</table>
-    <p class="hint">點品牌名稱看完整時間軸與來源。</p>`;
+  return `<h2>${esc(tx(nodeLabel(id)))}</h2><div class="note">${u.nodeSubtitle(u.nodeKind[kind], state.year)}</div>
+    <h3>${kind === 'parent' ? u.parentBrands : u.heldBrands}</h3>
+    <table>${rows.map((r) => `<tr><td><a href="#" data-id="brand:${r.brand.id}">${esc(tx(r.brand.name))}</a></td><td class="num">${fmtPct(r.pct)}</td></tr>`).join('')}</table>
+    <p class="hint">${u.nodeHint}</p>`;
 }
 
 function renderPanel() {
   if (!state.selected) {
-    panel.innerHTML = `<h2>點選圖表</h2><p class="hint">點任一品牌、股東、母公司或來源地，查看資本組成、收購時間與參考資料。拖動年份可看股權隨時間的變化，例如把年份拉到 2021 看 On 上市前的股東。</p>`;
+    panel.innerHTML = `<h2>${UI[state.lang].emptyTitle}</h2><p class="hint">${UI[state.lang].emptyHint}</p>`;
     return;
   }
   panel.innerHTML = state.selected.startsWith('brand:') ? brandPanel(byId[state.selected.slice(6)]) : nodePanel(state.selected);
@@ -187,21 +208,21 @@ function renderPanel() {
 
 function render() {
   writeHash();
+  renderStatic();
   renderCards();
   renderSankey();
   renderPanel();
 }
 
 let timer = null;
-document.getElementById('play').addEventListener('click', (ev) => {
-  if (timer) { clearInterval(timer); timer = null; ev.target.textContent = '▶ 播放'; return; }
+const stopPlaying = () => { clearInterval(timer); timer = null; renderStatic(); };
+playBtn.addEventListener('click', () => {
+  if (timer) return stopPlaying();
   if (state.year >= 2026) setYear(FIRST_YEAR);
-  ev.target.textContent = '❚❚ 暫停';
-  timer = setInterval(() => {
-    if (state.year >= 2026) { clearInterval(timer); timer = null; ev.target.textContent = '▶ 播放'; return; }
-    setYear(state.year + 1);
-  }, 350);
+  timer = setInterval(() => state.year >= 2026 ? stopPlaying() : setYear(state.year + 1), 350);
+  renderStatic();
 });
+document.querySelectorAll('.lang-toggle button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
 document.getElementById('show-all').addEventListener('click', () => select(state.selected));
 yearInput.addEventListener('input', () => setYear(Number(yearInput.value)));
 window.addEventListener('resize', () => renderSankey());

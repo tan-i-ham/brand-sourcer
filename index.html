@@ -10,33 +10,38 @@
 </head>
 <body>
   <header>
-    <h1>品牌資本溯源 <span class="en">Brand Sourcer</span></h1>
-    <p class="lede">這個品牌從哪裡來？誰買下了它？現在的錢來自哪裡？每一筆資料都附上財報或新聞來源。</p>
+    <div class="title-row">
+      <h1><span data-i18n="h1">品牌資本溯源</span> <span class="en" data-i18n="h1sub">Brand Sourcer</span></h1>
+      <div class="lang-toggle" role="group" data-i18n-label="langLabel" aria-label="語言">
+        <button type="button" data-lang="zh">中文</button><button type="button" data-lang="en">English</button>
+      </div>
+    </div>
+    <p class="lede" data-i18n="lede">這個品牌從哪裡來？誰買下了它？現在的錢來自哪裡？每一筆資料都附上財報或新聞來源。</p>
   </header>
 
-  <section class="controls" aria-label="年份">
-    <label for="year">年份 <output id="year-out"></output></label>
+  <section class="controls" data-i18n-label="year" aria-label="年份">
+    <label for="year"><span data-i18n="year">年份</span> <output id="year-out"></output></label>
     <input id="year" type="range" max="2026" step="1">
     <button id="play" type="button">▶ 播放</button>
   </section>
 
-  <section id="cards" class="cards" aria-label="各品牌中國資本比例"></section>
+  <section id="cards" class="cards" data-i18n-label="cardsLabel" aria-label="各品牌中國資本比例"></section>
 
   <main>
     <figure class="chart">
-      <figcaption>資本來源地 → 股東 → 母公司 → 品牌（每個品牌寬度 = 100%）<button id="show-all" type="button" hidden>顯示全部品牌</button></figcaption>
+      <figcaption><span data-i18n="chartCaption">資本來源地 → 股東 → 母公司 → 品牌（每個品牌寬度 = 100%）</span><button id="show-all" type="button" data-i18n="showAll" hidden>顯示全部品牌</button></figcaption>
       <div id="sankey"></div>
       <ul class="legend">
-        <li><span class="sw flagged"></span>中國／香港資本</li>
-        <li><span class="sw undisclosed"></span>未逐一揭露的公開市場股東</li>
-        <li><span class="sw other"></span>其他地區資本</li>
+        <li><span class="sw flagged"></span><span data-i18n="legendFlagged">中國／香港資本</span></li>
+        <li><span class="sw undisclosed"></span><span data-i18n="legendUndisclosed">未逐一揭露的公開市場股東</span></li>
+        <li><span class="sw other"></span><span data-i18n="legendOther">其他地區資本</span></li>
       </ul>
     </figure>
     <aside id="panel" aria-live="polite"></aside>
   </main>
 
   <footer>
-    <p>持股比例取自最近一期公開揭露（年報、委託書、SEC 13G）。上市公司只揭露 5% 以上大股東，其餘歸入「未逐一揭露」。非上場公司（如 mont-bell）持股未公開，以經營者推定。資料有誤請以來源為準。</p>
+    <p data-i18n="footer">持股比例取自最近一期公開揭露（年報、委託書、SEC 13G）。上市公司只揭露 5% 以上大股東，其餘歸入「未逐一揭露」。非上場公司（如 mont-bell）持股未公開，以經營者推定。資料有誤請以來源為準。</p>
   </footer>
 
   <script type="module" src="src/app.js"></script>
