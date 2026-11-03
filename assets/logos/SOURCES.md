@@ -15,3 +15,4 @@ Each logo is the original SVG file, downloaded unchanged on 2026-10-28. The logo
 | Mizuno | `mizuno.svg` | [File:MIZUNO logo.svg](https://commons.wikimedia.org/wiki/File:MIZUNO_logo.svg), Wikimedia Commons |
 | The North Face | `tnf.svg` | [File:The North Face logo.svg](https://commons.wikimedia.org/wiki/File:The_North_Face_logo.svg), Wikimedia Commons |
 | ASICS | `asics.svg` | [File:Asics Logo.svg](https://commons.wikimedia.org/wiki/File:Asics_Logo.svg), Wikimedia Commons |
+| Volkswagen | `volkswagen.svg` | [File:Volkswagen logo 2019.svg](https://commons.wikimedia.org/wiki/File:Volkswagen_logo_2019.svg), Wikimedia Commons (downloaded 2026-11-02) |

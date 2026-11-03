@@ -10,6 +10,7 @@ export const REGIONS = {
   FI: { label: { zh: '芬蘭', en: 'Finland' } },
   NO: { label: { zh: '挪威', en: 'Norway' } },
   SG: { label: { zh: '新加坡', en: 'Singapore' } },
+  QA: { label: { zh: '卡達', en: 'Qatar' } },
   CN: { label: { zh: '中國／香港', en: 'China / HK' }, flagged: true },
   UNDISCLOSED: { label: { zh: '未逐一揭露', en: 'Undisclosed' } },
 };
@@ -79,6 +80,14 @@ export const SOURCES = {
   asics_haglofs_sale: { title: 'アシックスがホグロフスを売却、香港の投資会社に', publisher: 'FASHIONSNAP', date: '2023-12-18', kind: 'news', url: 'https://www.fashionsnap.com/article/2023-12-18/asics-sold-haglofs/' },
   asics_wiki: { title: 'ASICS', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/ASICS' },
   mz_wiki: { title: 'Mizuno', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Mizuno' },
+
+  vw_ar25: { title: 'Volkswagen AG Annual Report 2025 – Shareholder structure', publisher: 'Volkswagen AG', kind: 'company', url: 'https://annualreport2025.volkswagen-group.com/group-management-report/shares-and-bonds/shareholder-structure.html' },
+  vw_ar24: { title: 'Volkswagen AG Annual Report 2024 – Shareholder structure', publisher: 'Volkswagen AG', kind: 'company', url: 'https://annualreport2024.volkswagen-group.com/group-management-report/shares-and-bonds/shareholder-structure.html' },
+  vw_chronicle_1949: { title: 'Chronicle 1949: September 6 (transfer of trusteeship over Volkswagenwerk GmbH, October 8, 1949)', publisher: 'Volkswagen Group', kind: 'company', url: 'https://www.volkswagen-group.com/en/images/detail/chronicle-1949-september-6-78438' },
+  vw_igm_history: { title: 'Die historische Verantwortung für VW', publisher: 'IG Metall', date: '2009-07-23', kind: 'news', url: 'https://www.igmetall.de/en/im-betrieb/die-historische-verantwortung-fuer-vw' },
+  vw_qatar_2009: { title: 'Qatar buys into Porsche and VW', publisher: 'The National', date: '2009-08-15', kind: 'news', url: 'https://www.thenationalnews.com/business/energy/qatar-buys-into-porsche-and-vw' },
+  vw_wiki: { title: 'Volkswagen Group', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Volkswagen_Group' },
+  vw_law_wiki: { title: 'Volkswagen Law', publisher: 'Wikipedia', kind: 'reference', url: 'https://en.wikipedia.org/wiki/Volkswagen_Law' },
 };
 
 const UNRESEARCHED_PUBLIC = [{ name: { zh: '公開市場股東（本期尚未研究）', en: 'Public holders (not yet researched)' }, origin: 'UNDISCLOSED', pct: 100 }];
@@ -93,6 +102,10 @@ const JP_TRUST_NOTE = { zh: '日本信託銀行代管的信託帳戶，背後投
 const FOREIGN_CUSTODY_NOTE = { zh: '海外機構投資人的託管帳戶，實際投資人與國籍未揭露。', en: 'Custody account of overseas institutional investors. The actual investors and their nationality are not disclosed.' };
 const GIC_NOTE = { zh: '新加坡政府的主權財富基金。', en: "Singapore's sovereign wealth fund." };
 const NORWAY_NOTE = { zh: '挪威政府名義持股，通常為挪威主權財富基金（Government Pension Fund Global）。', en: "Held in the name of the Norwegian government, usually the Government Pension Fund Global (Norway's sovereign wealth fund)." };
+const PORSCHE_SE_NOTE = { zh: '斯圖加特的控股公司，由 Porsche 與 Piëch 家族控制。持有 Volkswagen 53.3% 的投票權（普通股）。', en: 'Holding company in Stuttgart controlled by the Porsche and Piëch families. Holds 53.3% of the voting rights (ordinary shares) in Volkswagen.' };
+const LOWER_SAXONY_NOTE = { zh: 'Volkswagen 總部所在的德國聯邦州。持有 20.0% 投票權；依《福斯法》，持股 15% 以上即可指派兩席監事，並可否決重大決議。', en: 'The German state where Volkswagen has its headquarters. Holds 20.0% of the voting rights. Under the Volkswagen Law, a stake of at least 15% lets it appoint two supervisory board members and block major resolutions.' };
+const QATAR_NOTE = { zh: '卡達主權財富基金（卡達投資局）旗下公司。持有 17.0% 投票權。', en: 'Subsidiary of the Qatar Investment Authority, the sovereign wealth fund of Qatar. Holds 17.0% of the voting rights.' };
+const VW_BASIS = { zh: '認購股本（普通股加優先股）比例；投票權比例見各股東備註', en: 'Share of subscribed capital (ordinary plus preferred shares); voting-right shares are in each holder’s note' };
 const ANAMERED_NOTE ={ zh: 'Lululemon 創辦人 Chip Wilson 的投資公司，主要營業地在加拿大卑詩省。', en: 'Investment company of Lululemon founder Chip Wilson, mainly based in British Columbia, Canada.' };
 
 export const GROUPS = {
@@ -474,6 +487,59 @@ export const BRANDS = [
       { date: '2023-12-18', type: 'divested', title: { zh: '出售 Haglöfs 給 LionRock Capital', en: 'Sells Haglöfs to LionRock Capital' }, to: 'LionRock Capital（香港）', summary: { zh: 'ASICS 將 Haglöfs 售予香港投資公司 LionRock Capital，金額未公開。這是 ASICS 出售子公司給香港資本，不是中國資本入股 ASICS。', en: 'ASICS sells Haglöfs to the Hong Kong investment firm LionRock Capital; the price was not disclosed. This is ASICS selling a subsidiary to Hong Kong capital, not China capital taking a stake in ASICS.' }, sources: ['asics_yuho25', 'asics_haglofs_sale'] },
       { date: '2025-05-15', type: 'stake', title: { zh: '野村資產管理申報持股 5.06%', en: 'Nomura Asset Management reports a 5.06% stake' }, to: '野村アセットマネジメント', stakePct: 5.06, counterpartyOrigin: 'JP', summary: { zh: '野村集團提出大量保有報告書，其中野村資產管理持有 5.06%。公司無法確認基準日實際持股，因此未列入大股東表。', en: 'The Nomura group filed a large shareholding report; Nomura Asset Management holds 5.06%. The company could not confirm the actual holding on the record date, so it is not in the major shareholder table.' }, sources: ['asics_yuho25'] },
       { date: '2025-12-31', type: 'note', title: { zh: '外國法人合計約 53%', en: 'Foreign corporations hold about 53% in total' }, summary: { zh: '依股東類別統計，外國法人等持有 53.44%，金融機構 29.86%，個人 12.49%。海外託管帳戶背後的實際投資人未揭露，前十大股東中沒有中國或香港投資人。', en: 'By shareholder category, foreign corporations and others hold 53.44%, financial institutions 29.86% and individuals 12.49%. The actual investors behind overseas custody accounts are not disclosed, and no China or Hong Kong investor is among the top ten shareholders.' }, sources: ['asics_yuho25'] },
+    ],
+  },
+  {
+    id: 'volkswagen',
+    name: 'Volkswagen',
+    origin: 'DE',
+    founded: 1937,
+    summary: { zh: '1937 年由納粹德國的德意志勞工陣線設立，二戰後由英國軍政府接管，1949 年交由西德聯邦政府託管、下薩克森邦代管，1960 年以「國民股」部分民營化。2025 年底 Porsche SE 持有 31.9% 股本與 53.3% 投票權，下薩克森邦 11.8%，卡達控股 10.4%。揭露的股東中沒有中國或香港資本。', en: "Set up in 1937 by Nazi Germany's German Labour Front, taken over by the British military government after the Second World War, placed in 1949 under the trusteeship of the West German federal government with Lower Saxony administering it, and partly privatized in 1960 through \"people's shares\". At the end of 2025 Porsche SE held 31.9% of the capital and 53.3% of the votes, Lower Saxony 11.8% and Qatar Holding 10.4%. No disclosed shareholder is China or Hong Kong capital." },
+    eras: [
+      { from: 1937, parent: 'Gezuvor / Volkswagenwerk GmbH', parentOrigin: 'DE', defaultHolders: [{ name: { zh: '德意志勞工陣線 (DAF)', en: 'German Labour Front (DAF)' }, origin: 'DE', pct: 100, note: { zh: '納粹黨的勞工組織。', en: 'Labour organization of the Nazi Party.' } }], snapshots: [] },
+      { from: 1945, parent: { zh: 'Volkswagenwerk GmbH（英國軍政府接管）', en: 'Volkswagenwerk GmbH (under the British military government)' }, parentOrigin: 'DE', defaultHolders: [{ name: { zh: '英國軍政府', en: 'British military government' }, origin: 'UK', pct: 100 }], snapshots: [] },
+      { from: 1949, parent: { zh: 'Volkswagenwerk GmbH（聯邦託管）', en: 'Volkswagenwerk GmbH (federal trusteeship)' }, parentOrigin: 'DE', defaultHolders: [{ name: { zh: '西德聯邦政府與下薩克森邦', en: 'West German federal government and Lower Saxony' }, origin: 'DE', pct: 100, note: { zh: '聯邦政府為受託人，交由下薩克森邦代管。', en: 'The federal government held the trusteeship and assigned its administration to Lower Saxony.' } }], snapshots: [] },
+      {
+        from: 1960, parent: 'Volkswagenwerk AG', parentOrigin: 'DE',
+        defaultHolders: [
+          { name: { zh: '德國聯邦政府', en: 'German federal government' }, origin: 'DE', pct: 20, note: { zh: '1960 年民營化時的比例，之後的變動尚未研究。', en: 'Share at the 1960 privatization; later changes are not yet researched.' } },
+          { name: { zh: '下薩克森邦政府', en: 'State of Lower Saxony' }, origin: 'DE', pct: 20, note: { zh: '1960 年民營化時的比例，之後的變動尚未研究。', en: 'Share at the 1960 privatization; later changes are not yet researched.' } },
+        ],
+        snapshots: [],
+      },
+      {
+        from: 1985, parent: 'Volkswagen AG (XETRA: VOW3)', parentOrigin: 'DE', defaultHolders: UNRESEARCHED_PUBLIC,
+        snapshots: [
+          {
+            asOf: '2024-12-31', basis: VW_BASIS, source: 'vw_ar24',
+            holders: [
+              { name: 'Porsche Automobil Holding SE', origin: 'DE', pct: 31.9, note: PORSCHE_SE_NOTE },
+              { name: { zh: '下薩克森邦政府', en: 'State of Lower Saxony' }, origin: 'DE', pct: 11.8, note: LOWER_SAXONY_NOTE },
+              { name: { zh: '卡達控股 (Qatar Holding LLC)', en: 'Qatar Holding LLC' }, origin: 'QA', pct: 10.4, note: QATAR_NOTE },
+              { name: { zh: '德國機構投資人', en: 'German institutional investors' }, origin: 'DE', pct: 1.9, note: { zh: '年報只揭露類別，未列出個別機構。', en: 'The annual report gives only the category, not individual institutions.' } },
+            ],
+          },
+          {
+            asOf: '2025-12-31', basis: VW_BASIS, source: 'vw_ar25',
+            holders: [
+              { name: 'Porsche Automobil Holding SE', origin: 'DE', pct: 31.9, note: PORSCHE_SE_NOTE },
+              { name: { zh: '下薩克森邦政府', en: 'State of Lower Saxony' }, origin: 'DE', pct: 11.8, note: LOWER_SAXONY_NOTE },
+              { name: { zh: '卡達控股 (Qatar Holding LLC)', en: 'Qatar Holding LLC' }, origin: 'QA', pct: 10.4, note: QATAR_NOTE },
+              { name: { zh: '德國機構投資人', en: 'German institutional investors' }, origin: 'DE', pct: 2.1, note: { zh: '年報只揭露類別，未列出個別機構。', en: 'The annual report gives only the category, not individual institutions.' } },
+            ],
+          },
+        ],
+      },
+    ],
+    events: [
+      { date: '1937-05-28', type: 'founded', title: { zh: '於柏林設立', en: 'Set up in Berlin' }, summary: { zh: '德意志勞工陣線出資設立「德國國民車籌備公司」(Gezuvor)，1938 年 9 月 16 日更名為 Volkswagenwerk GmbH。', en: 'The German Labour Front funds the "Company for the Preparation of the German People\'s Car" (Gezuvor), renamed Volkswagenwerk GmbH on 16 September 1938.' }, sources: ['vw_wiki'] },
+      { date: '1945', type: 'acquired', title: { zh: '英國軍政府接管', en: 'British military government takes control' }, to: { zh: '英國軍政府', en: 'British military government' }, counterpartyOrigin: 'UK', summary: { zh: '二戰後工廠位於英國占領區，由英國軍官接管，先用於維修英軍車輛，再恢復生產金龜車。', en: 'After the Second World War the plant lay in the British zone; a British officer took control, first to repair British Army vehicles and then to restart Beetle production.' }, sources: ['vw_wiki'] },
+      { date: '1949-10-08', type: 'note', title: { zh: '交由西德聯邦政府託管', en: 'Trusteeship passes to the West German federal government' }, summary: { zh: '英國軍政府在聯邦經濟部的協商中，將 Volkswagenwerk GmbH 的託管權移交西德聯邦政府，由下薩克森邦代管。', en: 'In negotiations at the Federal Ministry of Economics, the British military government transfers trusteeship of Volkswagenwerk GmbH to the West German federal government, with Lower Saxony administering it.' }, sources: ['vw_chronicle_1949', 'vw_igm_history'] },
+      { date: '1960', type: 'ipo', title: { zh: '《福斯法》與國民股上市', en: 'Volkswagen Law and people\'s shares' }, summary: { zh: '公司改組為 Volkswagenwerk AG，60% 股本以「國民股」賣給小額投資人，聯邦政府與下薩克森邦各保留 20%。《福斯法》規定任何股東的投票權上限為 20%。', en: 'The company becomes Volkswagenwerk AG. 60% of the capital is sold as "people\'s shares", mainly to small investors, and the federal government and Lower Saxony keep 20% each. The Volkswagen Law caps any shareholder\'s voting rights at 20%.' }, sources: ['vw_igm_history', 'vw_law_wiki'] },
+      { date: '1985-07-04', type: 'rename', title: { zh: '更名 Volkswagen AG', en: 'Renamed Volkswagen AG' }, summary: { zh: 'Volkswagenwerk AG 更名為 Volkswagen Aktiengesellschaft。', en: 'Volkswagenwerk AG is renamed Volkswagen Aktiengesellschaft.' }, sources: ['vw_wiki'] },
+      { date: '2008-10', type: 'stake', title: { zh: 'Porsche 持有 42.6% 普通股', en: 'Porsche holds 42.6% of the ordinary shares' }, to: 'Porsche SE', stakePct: 42.6, counterpartyOrigin: 'DE', summary: { zh: 'Porsche 持有 42.6% 普通股，另有選擇權，實質掌握超過 74%。2007 年歐洲法院判決《福斯法》的 20% 投票權上限違法，2008 年德國修法保留下薩克森邦的否決權。', en: 'Porsche holds 42.6% of the ordinary shares plus options, effectively more than 74%. In 2007 the European Court of Justice ruled the 20% voting cap in the Volkswagen Law illegal, and in 2008 Germany rewrote the law to keep Lower Saxony\'s veto.' }, sources: ['vw_wiki', 'vw_law_wiki'] },
+      { date: '2009-08-14', type: 'stake', title: { zh: '卡達控股取得 17% 投票權', en: 'Qatar Holding acquires 17% of the votes' }, to: 'Qatar Holding LLC', stakePct: 17, counterpartyOrigin: 'QA', summary: { zh: '卡達控股向 Porsche 買下大部分 Volkswagen 股票選擇權，轉換為 17% 的 Volkswagen 持股，同時取得 Porsche 10% 股權。', en: 'Qatar Holding buys most of Porsche\'s options on Volkswagen shares, to be converted into a 17% stake in Volkswagen, and takes a 10% stake in Porsche.' }, sources: ['vw_qatar_2009'] },
+      { date: '2025-12-31', type: 'note', title: { zh: 'Porsche SE 掌握過半投票權', en: 'Porsche SE holds a majority of the votes' }, summary: { zh: '依認購股本：Porsche SE 31.9%、外國機構投資人 19.4%、下薩克森邦 11.8%、卡達控股 10.4%、德國機構投資人 2.1%、散戶與其他 24.4%。依投票權：Porsche SE 53.3%、下薩克森邦 20.0%、卡達控股 17.0%、其餘 9.7%。外國機構投資人的國籍未揭露。', en: 'By subscribed capital: Porsche SE 31.9%, foreign institutional investors 19.4%, Lower Saxony 11.8%, Qatar Holding 10.4%, German institutional investors 2.1%, private shareholders and others 24.4%. By votes: Porsche SE 53.3%, Lower Saxony 20.0%, Qatar Holding 17.0%, free float 9.7%. The nationality of the foreign institutional investors is not disclosed.' }, sources: ['vw_ar25'] },
     ],
   },
   {

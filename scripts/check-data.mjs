@@ -93,6 +93,7 @@ assert.equal(compositionAt(brand('arcteryx'), 2003).era.parent, 'adidas-Salomon 
 assert.equal(flaggedShare(compositionAt(brand('mizuno'), 2026)), 0, 'Mizuno in 2026 lists no China capital among its top ten holders');
 assert.equal(flaggedShare(compositionAt(brand('asics'), 2026)), 0, 'ASICS in 2026 lists no China capital among its top ten holders');
 assert.equal(brand('asics').events.some((e) => REGIONS[e.counterpartyOrigin]?.flagged), false, 'selling Haglöfs to a Hong Kong buyer is not China capital in ASICS');
+assert.equal(flaggedShare(compositionAt(brand('volkswagen'), 2026)), 0, 'Volkswagen in 2026 lists no China capital among its disclosed holders');
 assert.equal(idKey(compositionAt(brand('mizuno'), 1950).era.parent), '水野兄弟商會', 'Mizuno is family-held before its 1961 listing');
 assert.equal(compositionAt(BRANDS.find((b) => b.id === 'hoka'), 2010).era.parent, 'HOKA One One SAS', 'Hoka is French-owned before Deckers');
 
