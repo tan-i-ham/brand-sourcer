@@ -2,7 +2,7 @@ import { BRANDS, REGIONS, SOURCES } from './data.js';
 import { FIRST_YEAR, brandsTouching, byId, compositionAt, dealCount, flaggedShare, nodeLabel, sankeyGraph, yearOf } from './model.js';
 import { LANGS, UI, localize } from './i18n.js';
 
-const state = { year: 2026, selected: null, lang: 'zh' };
+const state = { year: 2026, focus: null, selected: null, lang: 'zh' };
 const tx = (v) => localize(v, state.lang);
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const regionColor = (region) => REGIONS[region].flagged ? css('--flagged') : region === 'UNDISCLOSED' ? css('--undisclosed') : css('--other');
@@ -20,13 +20,16 @@ yearInput.min = FIRST_YEAR;
 function readHash() {
   const p = new URLSearchParams(location.hash.slice(1));
   if (p.has('year')) state.year = Math.min(2026, Math.max(FIRST_YEAR, Number(p.get('year')) || 2026));
-  if (p.has('brand') && byId[p.get('brand')]) state.selected = `brand:${p.get('brand')}`;
+  if (p.has('brand') && byId[p.get('brand')]) {
+    state.focus = p.get('brand');
+    state.selected = `brand:${state.focus}`;
+  }
   if (LANGS.includes(p.get('lang'))) state.lang = p.get('lang');
 }
 
 function writeHash() {
   const p = new URLSearchParams({ year: state.year });
-  if (state.selected?.startsWith('brand:')) p.set('brand', state.selected.slice(6));
+  if (state.focus) p.set('brand', state.focus);
   if (state.lang !== 'zh') p.set('lang', state.lang);
   history.replaceState(null, '', `#${p}`);
 }
@@ -44,7 +47,15 @@ function setLang(lang) {
 }
 
 function select(id) {
-  state.selected = id === state.selected && id.startsWith('brand:') ? null : id;
+  if (id.startsWith('brand:')) state.focus = id.slice(6);
+  state.selected = id;
+  render();
+}
+
+function toggleBrand(brandId) {
+  if (state.focus !== brandId) return select(`brand:${brandId}`);
+  state.focus = null;
+  state.selected = null;
   render();
 }
 
@@ -64,20 +75,20 @@ function renderCards() {
   el.innerHTML = BRANDS.map((b) => {
     const comp = compositionAt(b, state.year);
     const cn = comp ? flaggedShare(comp) : 0;
-    const active = state.selected === `brand:${b.id}`;
-    return `<button class="card${active ? ' active' : ''}" data-id="brand:${b.id}" ${comp ? '' : 'disabled'}>
+    const active = state.focus === b.id;
+    return `<button class="card${active ? ' active' : ''}" data-id="${b.id}" ${comp ? '' : 'disabled'}>
       ${logo(b)}
       <div class="name">${esc(tx(b.name))}</div>
       <div class="meta">${esc(tx(REGIONS[b.origin].label))} · ${b.founded}</div>
       <div class="cn${cn > 0 ? ' hit' : ''}">${comp ? u.chinaCapital(fmtPct(cn)) : u.dataFrom(b.eras[0].from)}</div>
     </button>`;
   }).join('');
-  el.querySelectorAll('.card:not([disabled])').forEach((c) => c.addEventListener('click', () => select(c.dataset.id)));
+  el.querySelectorAll('.card:not([disabled])').forEach((c) => c.addEventListener('click', () => toggleBrand(c.dataset.id)));
 }
 
 function renderSankey() {
   const container = document.getElementById('sankey');
-  const focus = state.selected?.startsWith('brand:') ? state.selected.slice(6) : null;
+  const { focus } = state;
   document.getElementById('show-all').hidden = !focus;
   const graph = sankeyGraph(state.year, focus);
   if (!graph.nodes.length) {
@@ -111,7 +122,7 @@ function renderSankey() {
 
   const node = svg.append('g').selectAll('g').data(nodes).join('g')
     .attr('class', (d) => `node${d.id === state.selected ? ' selected' : ''}`)
-    .on('click', (_, d) => select(d.id));
+    .on('click', (_, d) => d.kind === 'brand' ? toggleBrand(d.brandId) : select(d.id));
   node.append('rect')
     .attr('x', (d) => d.x0).attr('y', (d) => d.y0)
     .attr('width', (d) => d.x1 - d.x0).attr('height', (d) => Math.max(1, d.y1 - d.y0))
@@ -223,7 +234,7 @@ playBtn.addEventListener('click', () => {
   renderStatic();
 });
 document.querySelectorAll('.lang-toggle button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
-document.getElementById('show-all').addEventListener('click', () => select(state.selected));
+document.getElementById('show-all').addEventListener('click', () => toggleBrand(state.focus));
 yearInput.addEventListener('input', () => setYear(Number(yearInput.value)));
 window.addEventListener('resize', () => renderSankey());
 
