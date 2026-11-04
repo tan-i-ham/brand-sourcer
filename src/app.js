@@ -136,10 +136,14 @@ function sourceList(keys) {
 
 function compositionPie(comp) {
   const size = 180;
-  const arc = d3.arc().innerRadius(size * 0.28).outerRadius(size / 2 - 2).padAngle(0.012).cornerRadius(2);
+  const inner = size * 0.28;
+  const outer = size / 2 - 2;
+  const arc = d3.arc().innerRadius(inner).outerRadius(outer).padAngle(0.012).cornerRadius(2);
   const slices = d3.pie().sort(null).value((h) => h.pct)(comp.holders);
+  const fits = (s) => (s.endAngle - s.startAngle) * (inner + outer) / 2 >= 34;
   return `<svg class="pie" viewBox="${-size / 2} ${-size / 2} ${size} ${size}" role="img" aria-label="${UI[state.lang].compositionAria(state.year)}">
-    ${slices.map((s) => `<path d="${arc(s)}" fill="${regionColor(s.data.origin)}"><title>${esc(tx(s.data.name))}\n${fmtPct(s.data.pct)}</title></path>`).join('')}
+    ${slices.map((s, i) => `<path data-i="${i}" d="${arc(s)}" fill="${regionColor(s.data.origin)}"><title>${esc(tx(s.data.name))}\n${fmtPct(s.data.pct)}</title></path>`).join('')}
+    ${slices.map((s, i) => `<text class="pie-pct${fits(s) ? '' : ' tight'}" data-i="${i}" transform="translate(${arc.centroid(s)})" dy="0.35em">${fmtPct(s.data.pct)}</text>`).join('')}
     <text class="pie-center" dy="-0.2em">${fmtPct(flaggedShare(comp))}</text>
     <text class="pie-sub" dy="1.2em">${UI[state.lang].pieSub}</text>
   </svg>`;
@@ -202,6 +206,11 @@ function renderPanel() {
     return;
   }
   panel.innerHTML = state.selected.startsWith('brand:') ? brandPanel(byId[state.selected.slice(6)]) : nodePanel(state.selected);
+  panel.querySelectorAll('.pie path').forEach((p) => {
+    const label = panel.querySelector(`.pie-pct[data-i="${p.dataset.i}"]`);
+    p.addEventListener('pointerenter', () => label.classList.add('on'));
+    p.addEventListener('pointerleave', () => label.classList.remove('on'));
+  });
   panel.querySelectorAll('.when').forEach((b) => b.addEventListener('click', () => setYear(Number(b.dataset.year))));
   panel.querySelectorAll('a[data-id]').forEach((a) => a.addEventListener('click', (ev) => { ev.preventDefault(); select(a.dataset.id); }));
 }
