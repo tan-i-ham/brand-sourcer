@@ -35,6 +35,12 @@ export function flaggedShare(composition) {
   return composition.holders.filter((h) => REGIONS[h.origin].flagged).reduce((s, h) => s + h.pct, 0);
 }
 
+export function largestHolder(composition) {
+  return composition.holders
+    .filter((h) => h.origin !== 'UNDISCLOSED')
+    .reduce((top, h) => (!top || h.pct > top.pct ? h : top), null);
+}
+
 export function sankeyGraph(year, focusBrandId = null) {
   const nodes = new Map();
   const links = new Map();

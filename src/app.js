@@ -1,5 +1,5 @@
 import { BRANDS, REGIONS, SOURCES } from './data.js';
-import { FIRST_YEAR, brandsTouching, byId, compositionAt, dealCount, flaggedShare, nodeLabel, sankeyGraph, yearOf } from './model.js';
+import { FIRST_YEAR, brandsTouching, byId, compositionAt, dealCount, flaggedShare, largestHolder, nodeLabel, sankeyGraph, yearOf } from './model.js';
 import { LANGS, UI, localize } from './i18n.js';
 
 const state = { year: 2026, focus: null, selected: null, lang: 'zh' };
@@ -170,6 +170,7 @@ function brandPanel(brand) {
   const comp = compositionAt(brand, state.year);
   const cn = comp ? flaggedShare(comp) : 0;
   const everFlagged = brand.events.some(isFlaggedEvent);
+  const top = comp ? largestHolder(comp) : null;
   const inherited = comp?.inheritedFrom ? u.inherited(esc(tx(brand.name)), esc(tx(comp.inheritedFrom))) : '';
   const basis = comp?.snapshot
     ? `${u.snapshotNote(inherited, esc(tx(comp.snapshot.basis)), esc(comp.snapshot.asOf))}${sourceList([comp.snapshot.source])}`
@@ -182,6 +183,7 @@ function brandPanel(brand) {
       <div class="stat"><b>${dealCount(brand, 'acquired')}</b><span>${u.acquired}</span></div>
       <div class="stat"><b>${dealCount(brand, 'divested')}</b><span>${u.divested}</span></div>
       <div class="stat${cn > 0 ? ' hit' : ''}"><b>${fmtPct(cn)}</b><span>${u.chinaCapitalIn(state.year)}</span></div>
+      <div class="stat${top && REGIONS[top.origin].flagged ? ' hit' : ''}"><b>${top ? esc(tx(REGIONS[top.origin].label)) : '—'}</b><span>${u.largestHolder(top && `${esc(tx(top.name))} ${fmtPct(top.pct)}`)}</span></div>
       <div class="stat${everFlagged ? ' hit' : ''}"><b>${everFlagged ? u.everYes : u.everNo}</b><span>${u.everFlagged}</span></div>
     </div>
     ${comp ? `<h3>${u.compositionHeading(state.year, esc(tx(comp.era.parent)))}</h3>${compositionPie(comp)}${compositionTable(comp)}<p class="note">${basis}</p>` : `<p class="hint">${u.noBrandData(state.year)}</p>`}
