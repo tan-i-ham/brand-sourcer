@@ -96,6 +96,27 @@ assert.match(await page.textContent('#panel'), /Hillhouse/, 'On 2021 panel names
 await scan(page, 'hash load', 'en');
 
 await page.goto('about:blank');
+await page.goto(`${base}#lang=en&year=1990&brand=nike`);
+await page.waitForSelector('.card');
+await page.click('#recent');
+const cardIds = () => page.$$eval('.card', (cs) => cs.map((c) => c.dataset.id).sort());
+const sankeyBrands = () => page.$$eval('#sankey g.node text', (ts) => ts.map((t) => t.textContent));
+assert.deepEqual(await cardIds(), ['arcteryx', 'on', 'salomon', 'wilson'], 'recent filter shows only brands with China capital since 2017');
+assert.equal(await page.getAttribute('#recent', 'aria-pressed'), 'true');
+assert.equal(await page.inputValue('#year'), '2026', 'turning the filter on from a year before the window jumps to 2026');
+assert.ok(!(await sankeyBrands()).includes('Nike'), 'Sankey drops brands outside the filter and the unmatched focus');
+assert.match(await page.textContent('.card[data-id="on"] .recent'), /2021–2023 \| peak 5\.1%/, 'On card shows its China-capital span');
+assert.ok((await page.evaluate(() => location.hash)).includes('recent=1'), 'hash records the filter');
+await scan(page, 'recent filter', 'en');
+await page.reload();
+await page.waitForSelector('.card');
+assert.equal((await cardIds()).length, 4, 'filter survives reload via hash');
+await setYear(1906);
+assert.match(await page.textContent('#sankey'), /No data for .*Arc'teryx/, 'empty year names the filtered brands');
+await page.click('#recent');
+assert.equal((await cardIds()).length, 12, 'turning the filter off shows every brand');
+
+await page.goto('about:blank');
 await page.goto(`${base}#lang=fr&year=2021`);
 await page.waitForSelector('.card');
 assert.equal(await page.getAttribute('html', 'lang'), 'zh-Hant-TW', 'unknown lang falls back to zh');

@@ -1,8 +1,10 @@
 import { BRANDS, REGIONS, SOURCES } from './data.js';
-import { FIRST_YEAR, brandsTouching, byId, compositionAt, dealCount, flaggedShare, largestHolder, nodeLabel, sankeyGraph, yearOf } from './model.js';
+import { FIRST_YEAR, RECENT, brandsTouching, byId, compositionAt, dealCount, flaggedShare, largestHolder, nodeLabel, recentChinaCapital, sankeyGraph, yearOf } from './model.js';
 import { LANGS, UI, localize } from './i18n.js';
 
-const state = { year: 2026, focus: null, selected: null, lang: 'zh' };
+const state = { year: 2026, focus: null, selected: null, lang: 'zh', recent: false };
+const recentChina = new Map(BRANDS.map((b) => [b.id, recentChinaCapital(b)]).filter(([, r]) => r));
+const visibleBrands = () => state.recent ? BRANDS.filter((b) => recentChina.has(b.id)) : BRANDS;
 const tx = (v) => localize(v, state.lang);
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const regionColor = (region) => REGIONS[region].flagged ? css('--flagged') : region === 'UNDISCLOSED' ? css('--undisclosed') : css('--other');
@@ -15,6 +17,7 @@ const yearInput = document.getElementById('year');
 const yearOut = document.getElementById('year-out');
 const panel = document.getElementById('panel');
 const playBtn = document.getElementById('play');
+const recentBtn = document.getElementById('recent');
 yearInput.min = FIRST_YEAR;
 
 function readHash() {
@@ -25,12 +28,14 @@ function readHash() {
     state.selected = `brand:${state.focus}`;
   }
   if (LANGS.includes(p.get('lang'))) state.lang = p.get('lang');
+  state.recent = p.get('recent') === '1';
 }
 
 function writeHash() {
   const p = new URLSearchParams({ year: state.year });
   if (state.focus) p.set('brand', state.focus);
   if (state.lang !== 'zh') p.set('lang', state.lang);
+  if (state.recent) p.set('recent', '1');
   history.replaceState(null, '', `#${p}`);
 }
 
@@ -43,6 +48,16 @@ function setYear(year) {
 
 function setLang(lang) {
   state.lang = lang;
+  render();
+}
+
+function toggleRecent() {
+  state.recent = !state.recent;
+  if (state.recent && state.focus && !recentChina.has(state.focus)) {
+    state.focus = null;
+    state.selected = null;
+  }
+  if (state.recent && state.year < RECENT.from) return setYear(RECENT.to);
   render();
 }
 
@@ -67,12 +82,15 @@ function renderStatic() {
   document.querySelectorAll('[data-i18n-label]').forEach((el) => el.setAttribute('aria-label', u[el.dataset.i18nLabel]));
   document.querySelectorAll('.lang-toggle button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.lang === state.lang));
   playBtn.textContent = timer ? u.pause : u.play;
+  recentBtn.textContent = u.recentFilter(RECENT.from, RECENT.to);
+  recentBtn.setAttribute('aria-pressed', state.recent);
 }
 
 function renderCards() {
   const u = UI[state.lang];
   const el = document.getElementById('cards');
-  el.innerHTML = BRANDS.map((b) => {
+  el.innerHTML = visibleBrands().map((b) => {
+    const recent = state.recent && recentChina.get(b.id);
     const comp = compositionAt(b, state.year);
     const cn = comp ? flaggedShare(comp) : 0;
     const active = state.focus === b.id;
@@ -81,6 +99,7 @@ function renderCards() {
       <div class="name">${esc(tx(b.name))}</div>
       <div class="meta">${esc(tx(REGIONS[b.origin].label))} · ${b.founded}</div>
       <div class="cn${cn > 0 ? ' hit' : ''}">${comp ? u.chinaCapital(fmtPct(cn)) : u.dataFrom(b.eras[0].from)}</div>
+      ${recent ? `<div class="recent">${u.recentSpan(recent.from, recent.to, fmtPct(recent.peak))}</div>` : ''}
     </button>`;
   }).join('');
   el.querySelectorAll('.card:not([disabled])').forEach((c) => c.addEventListener('click', () => toggleBrand(c.dataset.id)));
@@ -90,9 +109,10 @@ function renderSankey() {
   const container = document.getElementById('sankey');
   const { focus } = state;
   document.getElementById('show-all').hidden = !focus;
-  const graph = sankeyGraph(state.year, focus);
+  const brands = focus ? [byId[focus]] : visibleBrands();
+  const graph = sankeyGraph(state.year, brands.map((b) => b.id));
   if (!graph.nodes.length) {
-    container.innerHTML = `<p class="hint">${UI[state.lang].noDataYet(state.year, esc(tx(byId[focus].name)))}</p>`;
+    container.innerHTML = `<p class="hint">${UI[state.lang].noDataYet(state.year, esc(brands.map((b) => tx(b.name)).join(UI[state.lang].listSep)))}</p>`;
     return;
   }
   const width = Math.max(container.clientWidth, 760);
@@ -245,6 +265,7 @@ playBtn.addEventListener('click', () => {
   renderStatic();
 });
 document.querySelectorAll('.lang-toggle button').forEach((b) => b.addEventListener('click', () => setLang(b.dataset.lang)));
+recentBtn.addEventListener('click', toggleRecent);
 document.getElementById('show-all').addEventListener('click', () => toggleBrand(state.focus));
 yearInput.addEventListener('input', () => setYear(Number(yearInput.value)));
 window.addEventListener('resize', () => renderSankey());

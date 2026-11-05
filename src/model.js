@@ -41,7 +41,7 @@ export function largestHolder(composition) {
     .reduce((top, h) => (!top || h.pct > top.pct ? h : top), null);
 }
 
-export function sankeyGraph(year, focusBrandId = null) {
+export function sankeyGraph(year, brandIds = BRANDS.map((b) => b.id)) {
   const nodes = new Map();
   const links = new Map();
   const node = (id, props) => {
@@ -54,7 +54,7 @@ export function sankeyGraph(year, focusBrandId = null) {
     links.set(key, { source, target, value: (prev?.value ?? 0) + value });
   };
 
-  for (const brand of focusBrandId ? [byId[focusBrandId]] : BRANDS) {
+  for (const brand of brandIds.map((id) => byId[id])) {
     const comp = compositionAt(brand, year);
     if (!comp) continue;
     const brandId = node(`brand:${brand.id}`, { kind: 'brand', label: brand.name, brandId: brand.id, region: brand.origin });
@@ -99,5 +99,20 @@ const nodeLabels = new Map([
 export const nodeLabel = (id) => nodeLabels.get(id);
 
 export const FIRST_YEAR = Math.min(...BRANDS.map((b) => b.eras[0].from));
+export const LAST_YEAR = 2026;
+export const RECENT = { from: LAST_YEAR - 9, to: LAST_YEAR };
+
+// Years in RECENT when the brand had disclosed China capital, and the peak share. Null when it had none.
+export function recentChinaCapital(brand) {
+  const years = [];
+  let peak = 0;
+  for (let year = RECENT.from; year <= RECENT.to; year++) {
+    const comp = compositionAt(brand, year);
+    const share = comp ? flaggedShare(comp) : 0;
+    if (share > 0) years.push(year);
+    peak = Math.max(peak, share);
+  }
+  return years.length ? { from: years[0], to: years.at(-1), peak } : null;
+}
 
 export { BRANDS, REGIONS, byId, yearOf };
