@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { BRANDS, GROUPS, REGIONS, SOURCES } from '../src/data.js';
-import { FIRST_YEAR as firstYear, REMAINDER_NAME, compositionAt, flaggedShare, idKey, sankeyGraph, yearOf } from '../src/model.js';
+import { FIRST_YEAR as firstYear, REMAINDER_NAME, compositionAt, flaggedShare, idKey, recentChinaCapital, sankeyGraph, yearOf } from '../src/model.js';
 import { LANGS, UI } from '../src/i18n.js';
 
 const used = new Set();
@@ -81,9 +81,9 @@ assert.equal(compositionAt(BRANDS.find((b) => b.id === 'on'), 2021).holders.find
   'On at end of 2021 shows Hillhouse 5.1%');
 assert.equal(compositionAt(BRANDS.find((b) => b.id === 'on'), 2026).holders.some((h) => h.origin === 'CN'), false,
   'On in 2026 shows no disclosed China capital');
-assert.deepEqual(sankeyGraph(2026, 'on').nodes.filter((n) => n.kind === 'brand').map((n) => n.brandId), ['on'],
+assert.deepEqual(sankeyGraph(2026, ['on']).nodes.filter((n) => n.kind === 'brand').map((n) => n.brandId), ['on'],
   'focusing a brand hides the other brands');
-assert.equal(sankeyGraph(1990, 'converse').nodes.length, 0, 'a focused brand with no data that year yields an empty graph');
+assert.equal(sankeyGraph(1990, ['converse']).nodes.length, 0, 'a focused brand with no data that year yields an empty graph');
 const brand = (id) => BRANDS.find((b) => b.id === id);
 for (const id of ['arcteryx', 'salomon', 'wilson']) {
   assert.equal(Math.round(flaggedShare(compositionAt(brand(id), 2026)) * 10) / 10, 53.5, `${id} in 2026 shows 53.5% China capital via Amer Sports`);
@@ -96,6 +96,9 @@ assert.equal(brand('asics').events.some((e) => REGIONS[e.counterpartyOrigin]?.fl
 assert.equal(flaggedShare(compositionAt(brand('volkswagen'), 2026)), 0, 'Volkswagen in 2026 lists no China capital among its disclosed holders');
 assert.equal(idKey(compositionAt(brand('mizuno'), 1950).era.parent), '水野兄弟商會', 'Mizuno is family-held before its 1961 listing');
 assert.equal(compositionAt(BRANDS.find((b) => b.id === 'hoka'), 2010).era.parent, 'HOKA One One SAS', 'Hoka is French-owned before Deckers');
+assert.deepEqual(BRANDS.filter(recentChinaCapital).map((b) => b.id).sort(), ['arcteryx', 'on', 'salomon', 'wilson'],
+  'the last-10-years filter matches the Amer Sports brands and On');
+assert.deepEqual(recentChinaCapital(brand('on')), { from: 2021, to: 2023, peak: 5.1 }, 'On had China capital 2021-2023, peaking at 5.1%');
 
 if (errors.length) {
   console.error(errors.join('\n'));
